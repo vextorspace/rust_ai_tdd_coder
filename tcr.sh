@@ -22,9 +22,7 @@ TEST_RESULT=$?
     else
         echo "++++++ Tests passed! Committing ++++++"
         git add .
-        GIT_DIR=$(pwd)
-        echo "Git dir: $GIT_DIR"
-        COMMIT_MESSAGE=$(ai_commit_message "$GIT_DIR")
+        COMMIT_MESSAGE=$(ai_commit_message)
         echo "Commit message: $COMMIT_MESSAGE"
         git commit -m "$COMMIT_MESSAGE"
     fi
