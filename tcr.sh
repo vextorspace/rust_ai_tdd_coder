@@ -24,7 +24,7 @@ TEST_RESULT=$?
         git add .
         GIT_DIR=`pwd`
         echo "Git dir: $GIT_DIR"
-        COMMIT_MESSAGE=`ai_commit_message $GIT_DIR`
+        COMMIT_MESSAGE=`ai_commit_message "$GIT_DIR"`
         echo "Commit message: $COMMIT_MESSAGE"
         git commit -m "$COMMIT_MESSAGE"
     fi
