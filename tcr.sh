@@ -24,6 +24,7 @@ if [ -z "$CHANGED_FILES" ]; then
         echo "++++++ Tests passed! Committing ++++++"
         git add .
         COMMIT_MESSAGE=`ai_commit_message ./`
+        echo "Commit message: $COMMIT_MESSAGE"
         git commit -m "$COMMIT_MESSAGE"
     fi
 else
