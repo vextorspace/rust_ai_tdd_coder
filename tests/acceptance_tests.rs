@@ -22,6 +22,22 @@ fn passing_test() {
         .return_const(TestResults::PASSED);
 
     // ai is not queried
-    
+
+
+    mock! {
+    pub AiCoder {
+        fn write_new_code(&self, code: String, tests: String) -> Result<String>;
+    }
+}
+
+    let mut mock_ai_coder = MockAiCoder::new();
+
+    // Expect `write_new_code` to never be called
+    mock_ai_coder
+        .expect_write_new_code()
+        .times(0);
+
     // code is committed
+
+
 }
