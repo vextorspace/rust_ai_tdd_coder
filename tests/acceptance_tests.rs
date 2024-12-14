@@ -22,13 +22,11 @@ fn passing_test_commit_without_calling_ai() {
         .return_const(TestResults::PASSED);
 
     // ai is not queried
-
-
     mock! {
-    pub AiCoder {
-        fn write_new_code(&self, code: String, tests: String) -> Result<String>;
+        pub AiCoder {
+            fn write_new_code(&self, code: String, tests: String) -> Result<String>;
+        }
     }
-}
 
     let mut mock_ai_coder = MockAiCoder::new();
 
@@ -38,6 +36,22 @@ fn passing_test_commit_without_calling_ai() {
         .times(0);
 
     // code is committed
+    mock! {
+        pub VersionControl {
+            fn commit(&self, path: PathBuf);
+            fn reject(&self, path: PathBuf);
+        }
+    }
+
+    let mut mock_version_control = MockVersionControl::new();
+
+    // Expect `commit` to be called exactly once
+    mock_version_control
+        .expect_commit()
+        .times(1);
+    mock_version_control
+        .expect_reject()
+        .times(0);
 
 
 }
