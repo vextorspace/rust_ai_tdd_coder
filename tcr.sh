@@ -9,7 +9,7 @@ for file in $CHANGED_FILES; do
     echo $file
 done
 
-SRC_SUBDIRS=`find src -type d -exec basename {} \; | tr '\n' ' '`
+SRC_SUBDIRS=`find src -mindepth 1 -type d -exec basename {} \; | tr '\n' ' '`
 echo "DIRS: --- $SRC_SUBDIRS"
 cargo test calc
 # Store the test result
