@@ -1,7 +1,7 @@
-use mockall::predicate::*;
 use mockall::*;
 use std::path::PathBuf;
 use rust_ai_tdd_coder::test_runner::test_results::TestResults;
+use anyhow::Result;
 
 #[cfg(not(feature = "unit_tests"))]
 #[test]
