@@ -13,8 +13,8 @@ cargo test calc
 # Store the test result
 TEST_RESULT=$?
 
-    echo "----------- No changed files detected -----------"
-
+CHANGED_FILES=`git status -s | awk '{print $2}'`
+if [ -n "$CHANGED_FILES" ]; then
     # Check if tests failed
     if [ $TEST_RESULT -ne 0 ]; then
         echo "////////// Tests failed! Removing changes... //////////"
@@ -26,7 +26,7 @@ TEST_RESULT=$?
         echo "Commit message: $COMMIT_MESSAGE"
         git commit -m "$COMMIT_MESSAGE"
     fi
-
+fi
 
 echo "Running gradle tests..."
 cargo test --test acceptance_tests
