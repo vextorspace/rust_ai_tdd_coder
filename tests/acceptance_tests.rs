@@ -5,7 +5,7 @@ use anyhow::Result;
 
 #[cfg(not(feature = "unit_tests"))]
 #[test]
-fn passing_test() {
+fn passing_test_commit_without_calling_ai() {
     // given a set of passing tests
     mock! {
         pub TestProvider {
