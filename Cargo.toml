@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.94"
 llm-chain = "0.13.0"
+
+[features]
+unit_tests = []
