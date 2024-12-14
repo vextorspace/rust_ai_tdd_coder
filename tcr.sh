@@ -9,8 +9,14 @@ for file in $CHANGED_FILES; do
     echo $file
 done
 
+
+SRC_SUBDIRS=`find src -type d`
+
+SRC_SUBDIRS=$(find src -type d | tr '\n' ' ')
+
 cargo test calc
 # Store the test result
+
 TEST_RESULT=$?
 
 CHANGED_FILES=`git status -s | awk '{print $2}'`
