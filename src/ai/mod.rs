@@ -1,2 +1,2 @@
-pub(crate) mod ai_provider;
-pub(crate) mod ai_coder;
+pub mod ai_provider;
+pub mod ai_coder;

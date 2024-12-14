@@ -1,6 +1,6 @@
-use std::path::Path;
-use anyhow::Result;
+use crate::test_runner::test_results::TestResults;
+use std::path::PathBuf;
 
 trait TestProvider {
-    fn run_tests(&self, path: Path) -> Result<String>;
+    fn run_tests(&self, path: PathBuf) -> TestResults;
 }
