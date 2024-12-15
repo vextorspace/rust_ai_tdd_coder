@@ -1,5 +1,6 @@
 use crate::test_runner::test_provider::TestProvider;
 use crate::git::version_control::VersionControl;
+use crate::ai::ai_coder::AiCoder;
 
 pub struct Assistant {
     test_provider: Option<Box<dyn TestProvider>>,
@@ -21,6 +22,10 @@ impl Assistant {
 
     pub fn with_version_control(&mut self, version_control: Box<dyn VersionControl>) -> &mut Self {
         self.version_control = Some(version_control);
+        self
+    }
+
+    pub fn with_ai_coder(&mut self, _ai_coder: Box<dyn AiCoder>) -> &mut Self {
         self
     }
 }
@@ -48,12 +53,16 @@ mod tests {
             .times(0);
 
         let mut mock_ai_coder = MockAiCoder::new();
+        mock_ai_coder
+            .expect_write_new_code()
+            .times(0);
 
         let _ = Assistant::new()
             .with_test_provider(
-                Box::new(mock_test_provider)
-            ).with_version_control(
-                Box::new(mock_version_control)
-        );
+                Box::new(mock_test_provider))
+            .with_version_control(
+                Box::new(mock_version_control))
+            .with_ai_coder(
+                Box::new(mock_ai_coder));
     }
 }
