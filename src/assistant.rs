@@ -4,7 +4,8 @@ use crate::ai::ai_coder::AiCoder;
 
 pub struct Assistant {
     test_provider: Option<Box<dyn TestProvider>>,
-    version_control: Option<Box<dyn VersionControl>>
+    version_control: Option<Box<dyn VersionControl>>,
+    ai_coder: Option<Box<dyn AiCoder>>,
 }
 
 impl Assistant {
@@ -12,6 +13,7 @@ impl Assistant {
         Assistant {
             test_provider: None,
             version_control: None,
+            ai_coder: None,
         }
     }
 
@@ -25,7 +27,8 @@ impl Assistant {
         self
     }
 
-    pub fn with_ai_coder(&mut self, _ai_coder: Box<dyn AiCoder>) -> &mut Self {
+    pub fn with_ai_coder(&mut self, ai_coder: Box<dyn AiCoder>) -> &mut Self {
+        self.ai_coder = Some(ai_coder);
         self
     }
 }
