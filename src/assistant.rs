@@ -23,7 +23,7 @@ impl Assistant {
     }
 
     pub fn tcr(&self, path: PathBuf) {
-
+        let results = self.test_provider.run_tests(path);
     }
 }
 
@@ -33,6 +33,7 @@ mod tests {
     use crate::test_runner::test_provider::MockTestProvider;
     use crate::git::version_control::MockVersionControl;
     use crate::ai::ai_coder::MockAiCoder;
+    use crate::test_runner::test_results::TestResults;
 
     #[test]
     fn instantiates() {
@@ -41,5 +42,17 @@ mod tests {
         let ai_coder = Box::new(MockAiCoder::new());
         let _assistant = Assistant::new(test_provider, version_control, ai_coder);
     }
+
+    #[test]
+    fn tcr_calls_tests() {
+        let mut test_provider = MockTestProvider::new();
+        test_provider.expect_run_tests().times(1).return_const(TestResults::PASSED);
+        let version_control = Box::new(MockVersionControl::new());
+        let ai_coder = Box::new(MockAiCoder::new());
+        let assistant = Assistant::new(Box::new(test_provider), version_control, ai_coder);
+        assistant.tcr(PathBuf::new());
+    }
+
+
 
 }
