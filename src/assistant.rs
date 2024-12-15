@@ -1,15 +1,18 @@
 use crate::test_runner::test_provider::TestProvider;
 
 pub struct Assistant {
-
+    test_provider: Option<Box<dyn TestProvider>>,
 }
 
 impl Assistant {
     pub fn new() -> Assistant {
-        Assistant {}
+        Assistant {
+            test_provider: None,
+        }
     }
 
     pub fn with_test_provider(&mut self, test_provider: Box<dyn TestProvider>) -> &mut Self {
+        self.test_provider = Some(test_provider);
         self
     }
 }
