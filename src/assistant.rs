@@ -28,7 +28,7 @@ mod tests {
     #[test]
     fn instatiates() {
         let mut mock_test_provider = MockTestProvider::new();
-        mock_test_provider.expect_run_tests().times(0);
+        mock_test_provider.expect_run_tests().times(0).returning(|_| TestResults::PASSED);
 
         let _ = Assistant::new();
 
