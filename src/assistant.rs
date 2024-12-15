@@ -30,6 +30,12 @@ mod tests {
             .times(0);
 
         let mut mock_version_control = MockVersionControl::new();
+        mock_version_control
+            .expect_commit()
+            .times(0);
+        mock_version_control
+            .expect_reject()
+            .times(0);
 
         let _ = Assistant::new()
             .with_test_provider(
