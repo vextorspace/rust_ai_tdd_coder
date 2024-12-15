@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+#[cfg_attr(test, mockall::automock)]
 pub trait AiCoder {
     fn write_new_code(&self, code: String, tests: String) -> Result<String>;
 }
