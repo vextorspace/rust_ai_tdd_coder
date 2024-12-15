@@ -35,7 +35,6 @@ mod tests {
         let version_control = Box::new(MockVersionControl::new());
         let ai_coder = Box::new(MockAiCoder::new());
         let _assistant = Assistant::new(test_provider, version_control, ai_coder);
-
-
     }
+
 }
