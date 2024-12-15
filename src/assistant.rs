@@ -3,12 +3,14 @@ use crate::git::version_control::VersionControl;
 
 pub struct Assistant {
     test_provider: Option<Box<dyn TestProvider>>,
+    version_control: Option<Box<dyn VersionControl>>
 }
 
 impl Assistant {
     pub fn new() -> Assistant {
         Assistant {
             test_provider: None,
+            version_control: None,
         }
     }
 
@@ -17,7 +19,8 @@ impl Assistant {
         self
     }
 
-    pub fn with_version_control(&mut self, _version_control: Box<dyn VersionControl>) -> &mut Self {
+    pub fn with_version_control(&mut self, version_control: Box<dyn VersionControl>) -> &mut Self {
+        self.version_control = Some(version_control);
         self
     }
 }
