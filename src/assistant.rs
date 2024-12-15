@@ -1,4 +1,5 @@
 use crate::test_runner::test_provider::TestProvider;
+use crate::git::version_control::VersionControl;
 
 pub struct Assistant {
     test_provider: Option<Box<dyn TestProvider>>,
@@ -15,7 +16,12 @@ impl Assistant {
         self.test_provider = Some(test_provider);
         self
     }
+
+    pub fn with_version_control(&mut self, _version_control: Box<dyn VersionControl>) -> &mut Self {
+        self
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -40,6 +46,8 @@ mod tests {
         let _ = Assistant::new()
             .with_test_provider(
                 Box::new(mock_test_provider)
-            );
+            ).with_version_control(
+                Box::new(mock_version_control)
+        );
     }
 }
