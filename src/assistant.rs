@@ -1,6 +1,7 @@
 use crate::test_runner::test_provider::TestProvider;
 use crate::git::version_control::VersionControl;
 use crate::ai::ai_coder::AiCoder;
+use std::path::PathBuf;
 
 pub struct Assistant {
     test_provider: Box<dyn TestProvider>,
@@ -19,6 +20,10 @@ impl Assistant {
             version_control: version_control,
             ai_coder: ai_coder,
         }
+    }
+
+    pub fn tcr(&self, path: PathBuf) {
+
     }
 }
 
