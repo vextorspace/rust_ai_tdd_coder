@@ -30,6 +30,7 @@ mod tests {
     use super::*;
     use crate::test_runner::test_provider::MockTestProvider;
     use crate::git::version_control::MockVersionControl;
+    use crate::ai::ai_coder::MockAiCoder;
 
     #[test]
     fn instatiates() {
@@ -45,6 +46,8 @@ mod tests {
         mock_version_control
             .expect_reject()
             .times(0);
+
+        let mut mock_ai_coder = MockAiCoder::new();
 
         let _ = Assistant::new()
             .with_test_provider(
