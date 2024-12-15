@@ -19,18 +19,14 @@ mod tests {
     use super::*;
     use std::path::PathBuf;
     use crate::test_runner::test_results::TestResults;
-
-    #[automock]
-    pub trait TestProvider {
-        fn run_tests(&self, path: PathBuf) -> TestResults;
-    }
+    use crate::test_runner::test_provider::MockTestProvider;
 
     #[test]
     fn instatiates() {
         let mut mock_test_provider = MockTestProvider::new();
         mock_test_provider.expect_run_tests().times(0).returning(|_| TestResults::PASSED);
 
-        let _ = Assistant::new();
+        let _ = Assistant::new().with_test_provider(Box::new(mock_test_provider));
 
     }
 }
