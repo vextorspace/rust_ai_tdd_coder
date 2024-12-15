@@ -1,3 +1,5 @@
+use crate::test_runner::test_provider::TestProvider;
+
 pub struct Assistant {
 
 }
@@ -5,6 +7,10 @@ pub struct Assistant {
 impl Assistant {
     pub fn new() -> Assistant {
         Assistant {}
+    }
+
+    pub fn with_test_provider(&mut self, test_provider: Box<dyn TestProvider>) -> &mut Self {
+        self
     }
 }
 #[cfg(test)]
