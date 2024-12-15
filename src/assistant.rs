@@ -17,6 +17,9 @@ impl Assistant {
         }
     }
 
+    pub fn builder() -> AssistantBuilder {
+        AssistantBuilder::new()
+    }
     pub fn with_test_provider(&mut self, test_provider: Box<dyn TestProvider>) -> &mut Self {
         self.test_provider = Some(test_provider);
         self
@@ -33,6 +36,25 @@ impl Assistant {
     }
 }
 
+pub struct AssistantBuilder {
+}
+
+impl AssistantBuilder {
+    fn new() -> AssistantBuilder {
+        AssistantBuilder {
+        }
+    }
+
+
+    pub fn build(&self) -> Assistant {
+        Assistant {
+            test_provider: None,
+            version_control: None,
+            ai_coder: None,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -41,31 +63,10 @@ mod tests {
     use crate::ai::ai_coder::MockAiCoder;
 
     #[test]
-    fn instatiates() {
-        let mut mock_test_provider = MockTestProvider::new();
-        mock_test_provider
-            .expect_run_tests()
-            .times(0);
-
-        let mut mock_version_control = MockVersionControl::new();
-        mock_version_control
-            .expect_commit()
-            .times(0);
-        mock_version_control
-            .expect_reject()
-            .times(0);
-
-        let mut mock_ai_coder = MockAiCoder::new();
-        mock_ai_coder
-            .expect_write_new_code()
-            .times(0);
-
-        let _ = Assistant::new()
-            .with_test_provider(
-                Box::new(mock_test_provider))
-            .with_version_control(
-                Box::new(mock_version_control))
-            .with_ai_coder(
-                Box::new(mock_ai_coder));
+    fn builder_creates_empty() {
+        let assistant = Assistant::builder().build();
+        assert!(assistant.test_provider.is_none());
+        assert!(assistant.version_control.is_none());
+        assert!(assistant.ai_coder.is_none());
     }
 }
