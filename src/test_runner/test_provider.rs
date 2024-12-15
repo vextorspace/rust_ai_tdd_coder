@@ -4,5 +4,5 @@ use mockall::automock;
 
 #[cfg_attr(test, automock)]
 pub trait TestProvider {
-    fn run_tests(&self, path: PathBuf) -> TestResults;
+    fn run_tests(&self, path: &PathBuf) -> TestResults;
 }

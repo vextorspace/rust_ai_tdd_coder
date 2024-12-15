@@ -22,8 +22,8 @@ impl Assistant {
         }
     }
 
-    pub fn tcr(&self, path: PathBuf) {
-        let results = self.test_provider.run_tests(path);
+    pub fn tcr(&self, path: &PathBuf) {
+        let results = self.test_provider.run_tests(&path);
     }
 }
 
@@ -50,7 +50,7 @@ mod tests {
         let version_control = Box::new(MockVersionControl::new());
         let ai_coder = Box::new(MockAiCoder::new());
         let assistant = Assistant::new(Box::new(test_provider), version_control, ai_coder);
-        assistant.tcr(PathBuf::new());
+        assistant.tcr(&PathBuf::new());
     }
 
 
