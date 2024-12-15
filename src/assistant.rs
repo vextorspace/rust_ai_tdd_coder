@@ -20,14 +20,17 @@ impl Assistant {
 mod tests {
     use super::*;
     use crate::test_runner::test_provider::MockTestProvider;
-    use crate::test_runner::test_results::TestResults;
 
     #[test]
     fn instatiates() {
         let mut mock_test_provider = MockTestProvider::new();
-        mock_test_provider.expect_run_tests().times(0);
+        mock_test_provider
+            .expect_run_tests()
+            .times(0);
 
-        let _ = Assistant::new().with_test_provider(Box::new(mock_test_provider));
-
+        let _ = Assistant::new()
+            .with_test_provider(
+                Box::new(mock_test_provider)
+            );
     }
 }
