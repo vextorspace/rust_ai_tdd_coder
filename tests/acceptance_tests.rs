@@ -2,50 +2,31 @@ use mockall::*;
 use std::path::PathBuf;
 use rust_ai_tdd_coder::test_runner::test_results::TestResults;
 use anyhow::Result;
+use rust_ai_tdd_coder::assistant::Assistant;
 
 #[cfg(not(feature = "unit_tests"))]
 #[test]
 fn passing_test_commit_without_calling_ai() {
-    // given a set of passing tests
-    mock! {
-        pub TestProvider {
-            fn run_test(&self, path: PathBuf) -> TestResults;
-        }
-    }
+    use rust_ai_tdd_coder::test_runner::test_provider::MockTestProvider;
+    use rust_ai_tdd_coder::git::version_control::MockVersionControl;
+    use rust_ai_tdd_coder::ai::ai_coder::MockAiCoder;
 
-    let mut mock_provider = MockTestProvider::new();
-
-    // Expect `run_test` to be called exactly once and return `TestResults::PASSED`
-    mock_provider
-        .expect_run_test()
+    // given a test provider that returns PASSED
+    let mut mock_test_provider = MockTestProvider::new();
+    mock_test_provider
+        .expect_run_tests()
         .times(1)
         .return_const(TestResults::PASSED);
 
-    // ai is not queried
-    mock! {
-        pub AiCoder {
-            fn write_new_code(&self, code: String, tests: String) -> Result<String>;
-        }
-    }
-
+    // expect that ai_coder.write_new_code is not called
     let mut mock_ai_coder = MockAiCoder::new();
-
-    // Expect `write_new_code` to never be called
     mock_ai_coder
         .expect_write_new_code()
         .times(0);
 
-    // code is committed
-    mock! {
-        pub VersionControl {
-            fn commit(&self, path: PathBuf);
-            fn reject(&self, path: PathBuf);
-        }
-    }
-
+    // expect that version_control.commit is called
+    // and that the reject is not called
     let mut mock_version_control = MockVersionControl::new();
-
-    // Expect `commit` to be called exactly once
     mock_version_control
         .expect_commit()
         .times(1);
@@ -53,5 +34,13 @@ fn passing_test_commit_without_calling_ai() {
         .expect_reject()
         .times(0);
 
+    let assistant = Assistant::new()
+        .with_test_provider(
+            Box::new(mock_test_provider))
+        .with_version_control(
+            Box::new(mock_version_control))
+        .with_ai_coder(
+            Box::new(mock_ai_coder));
 
+    assistant.run(PathBuf::from("path"));
 }
