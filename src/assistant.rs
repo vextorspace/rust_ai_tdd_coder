@@ -23,10 +23,12 @@ mod tests {
     #[test]
     fn instatiates() {
         mock!{
-            pub TestRunner {
+            pub TestProvider {
                 fn run_tests(&self, path: PathBuf) -> TestResults;
             }
         }
+        let mut mock_test_provider = MockTestProvider::new();
+
         let _ = super::Assistant::new();
 
     }
