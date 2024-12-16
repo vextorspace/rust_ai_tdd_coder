@@ -30,7 +30,9 @@ impl Assistant {
             TestResults::PASSED => {
                 self.version_control.commit(&path);
             }
-            _ => {}
+            TestResults::FAILED(_result) => {
+                self.version_control.reject(&path);
+            }
         }
     }
 }
@@ -77,4 +79,17 @@ mod tests {
         assistant.tcr(&PathBuf::new());
     }
 
+    #[test]
+    fn tcr_rejects_if_tests_failed() {
+        let mut test_provider = MockTestProvider::new();
+        test_provider.expect_run_tests().return_const(TestResults::FAILED("".to_string()));
+        let mut version_control = MockVersionControl::new();
+        version_control.expect_commit().times(0);
+        version_control.expect_reject().times(1).return_const(());
+        let mut coder = MockAiCoder::new();
+        coder.expect_write_new_code().times(0);
+        let ai_coder = Box::new(coder);
+        let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), ai_coder);
+        assistant.tcr(&PathBuf::new());
+    }
 }
