@@ -70,7 +70,9 @@ mod tests {
         let mut version_control = MockVersionControl::new();
         version_control.expect_commit().times(1).return_const(());
         version_control.expect_reject().times(0).return_const(());
-        let ai_coder = Box::new(MockAiCoder::new());
+        let mut coder = MockAiCoder::new();
+        coder.expect_write_new_code().times(0);
+        let ai_coder = Box::new(coder);
         let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), ai_coder);
         assistant.tcr(&PathBuf::new());
     }
