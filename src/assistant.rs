@@ -2,6 +2,7 @@ use crate::test_runner::test_provider::TestProvider;
 use crate::git::version_control::VersionControl;
 use crate::ai::ai_coder::AiCoder;
 use std::path::PathBuf;
+use crate::test_runner::test_results::TestResults;
 
 pub struct Assistant {
     test_provider: Box<dyn TestProvider>,
@@ -24,6 +25,13 @@ impl Assistant {
 
     pub fn tcr(&self, path: &PathBuf) {
         let results = self.test_provider.run_tests(&path);
+
+        match results {
+            TestResults::PASSED => {
+                self.version_control.commit(&path);
+            }
+            _ => {}
+        }
     }
 }
 
@@ -47,12 +55,23 @@ mod tests {
     fn tcr_calls_tests() {
         let mut test_provider = MockTestProvider::new();
         test_provider.expect_run_tests().times(1).return_const(TestResults::PASSED);
-        let version_control = Box::new(MockVersionControl::new());
+        let mut control = MockVersionControl::new();
+        control.expect_commit().return_const(());
+        let version_control = Box::new(control);
         let ai_coder = Box::new(MockAiCoder::new());
         let assistant = Assistant::new(Box::new(test_provider), version_control, ai_coder);
         assistant.tcr(&PathBuf::new());
     }
 
-
+    #[test]
+    fn tcr_commits_if_tests_passed() {
+        let mut test_provider = MockTestProvider::new();
+        test_provider.expect_run_tests().return_const(TestResults::PASSED);
+        let mut version_control = MockVersionControl::new();
+        version_control.expect_commit().times(1).return_const(());
+        let ai_coder = Box::new(MockAiCoder::new());
+        let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), ai_coder);
+        assistant.tcr(&PathBuf::new());
+    }
 
 }
