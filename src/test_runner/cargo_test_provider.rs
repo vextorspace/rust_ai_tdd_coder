@@ -41,6 +41,7 @@ mod tests {
         let mut args = command.get_args();
         let test_argument = args.next();
         assert!(test_argument.is_some());
+        assert_eq!(test_argument.unwrap(), "test");
     }
 
 
