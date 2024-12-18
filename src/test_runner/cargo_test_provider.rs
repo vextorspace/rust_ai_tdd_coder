@@ -11,7 +11,7 @@ impl CargoTestProvider {
     }
 
     fn make_test_command(&self, path: &PathBuf) -> Command {
-        let mut command = Command::new(path);
+        let mut command = Command::new("cargo");
         command.current_dir(path);
         command.arg("test");
         command
@@ -39,6 +39,10 @@ mod tests {
     fn creates_command() {
         let provider = CargoTestProvider::new();
         let command = provider.make_test_command(&PathBuf::from("/tests"));
+
+        let command_name = command.get_program();
+        assert_eq!(command_name, "cargo");
+
         let mut args = command.get_args();
         let test_argument = args.next();
         assert!(test_argument.is_some());
