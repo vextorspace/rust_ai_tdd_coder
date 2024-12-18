@@ -1,3 +1,4 @@
+use std::fmt::format;
 use super::test_provider::TestProvider;
 use super::test_results::TestResults;
 use std::path::PathBuf;
@@ -19,8 +20,20 @@ impl CargoTestProvider {
 }
 
 impl TestProvider for CargoTestProvider {
-    fn run_tests(&self, _path: &PathBuf) -> TestResults {
-        TestResults::PASSED
+    fn run_tests(&self, path: &PathBuf) -> TestResults {
+        let mut command = self.make_test_command(path);
+        match command.output() {
+            Ok(output) => {
+                if !output.status.success() {
+                    TestResults::FAILED(String::from("command process failed"))
+                } else if output.stderr.is_empty() {
+                    TestResults::PASSED
+                } else {
+                    TestResults::FAILED(String::from_utf8_lossy(&output.stderr).to_string())
+                }
+            },
+            Err(error) => TestResults::FAILED(format!("Failed to run tests due to error: {}", error)),
+        }
     }
 }
 
