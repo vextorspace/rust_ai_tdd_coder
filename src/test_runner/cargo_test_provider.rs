@@ -12,6 +12,7 @@ impl CargoTestProvider {
 
     fn make_test_command(&self, path: &PathBuf) -> Command {
         let mut command = Command::new(path);
+        command.current_dir(path);
         command.arg("test");
         command
     }
@@ -42,6 +43,10 @@ mod tests {
         let test_argument = args.next();
         assert!(test_argument.is_some());
         assert_eq!(test_argument.unwrap(), "test");
+
+        let path = command.get_current_dir();
+        assert!(path.is_some());
+        assert_eq!(path.unwrap(), PathBuf::from("/tests").as_path());
     }
 
 
