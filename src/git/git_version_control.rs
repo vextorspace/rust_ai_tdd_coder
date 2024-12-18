@@ -53,6 +53,23 @@ mod tests {
     }
 
     #[test]
+    fn create_add_command() {
+        let provider = GitVersionControl::new();
+        let path_to_repo = "/tests";
+        let command = provider.make_add_command(&PathBuf::from(path_to_repo.clone()));
+        let command_name = command.get_program();
+        assert_eq!(command_name, "git");
+        let mut args = command.get_args();
+        let add_argument = args.next();
+        assert!(add_argument.is_some());
+        assert_eq!(add_argument.unwrap(), "add");
+
+        let path = args.next();
+        assert!(path.is_some());
+        assert_eq!(path.unwrap(), path_to_repo);
+    }
+
+    #[test]
     fn create_test_command() {
         let provider = GitVersionControl::new();
         let command = provider.make_commit_command(&PathBuf::from("/tests"));
