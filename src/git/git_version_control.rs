@@ -8,7 +8,7 @@ pub struct GitVersionControl{
 }
 
 impl GitVersionControl {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         Self{}
     }
 
@@ -20,12 +20,12 @@ impl GitVersionControl {
         command
     }
 
-    fn make_commit_command(&self, path: &PathBuf) -> Command {
+    fn make_commit_command(&self, path: &PathBuf, message: String) -> Command {
         let mut command = Command::new("git");
         command.current_dir(path);
         command.arg("commit");
         command.arg("-m");
-        command.arg("working");
+        command.arg(message);
         command
     }
 
@@ -40,18 +40,26 @@ impl GitVersionControl {
 }
 
 impl VersionControl for GitVersionControl {
-    fn commit(&self, path: &PathBuf) -> Result<()>{
+    fn commit(&self, path: &PathBuf, message: String) -> Result<()>{
         let mut add_command = self.make_add_command(path);
         add_command.status()?;
-        let mut command = self.make_commit_command(path);
+        let mut command = self.make_commit_command(path, message);
         command.status()?;
         Ok(())
     }
 
-    fn reject(&self, _path: &PathBuf) -> Result<()> {
-        let mut command = self.make_reject_command(_path);
+    fn reject(&self, path: &PathBuf) -> Result<()> {
+        let mut command = self.make_reject_command(path);
         command.status()?;
         Ok(())
+    }
+
+    fn diff(&self, path: &PathBuf) -> Result<String> {
+        let output = Command::new("git")
+            .current_dir(path)
+            .arg("diff")
+            .output()?;
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 }
 
@@ -89,10 +97,12 @@ mod tests {
     }
 
     #[test]
-    fn create_test_command() {
+    fn create_commit_command() {
         let provider = GitVersionControl::new();
         let path_buf = PathBuf::from("/tests");
-        let command = provider.make_commit_command(&path_buf);
+        let commit_message = "commit message".to_string();
+
+        let command = provider.make_commit_command(&path_buf, commit_message.clone());
         let command_name = command.get_program();
         assert_eq!(command_name, "git");
         let mut args = command.get_args();
@@ -106,7 +116,7 @@ mod tests {
 
         let message = args.next();
         assert!(message.is_some());
-        assert!(!message.unwrap().is_empty());
+        assert_eq!(message.unwrap().to_str().unwrap(), commit_message);
 
         let path = command.get_current_dir();
         assert!(path.is_some());
@@ -137,6 +147,4 @@ mod tests {
         assert!(path.is_some());
         assert_eq!(path.unwrap(), path_buf.as_path());
     }
-
-
 }
