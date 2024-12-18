@@ -25,11 +25,9 @@ impl TestProvider for CargoTestProvider {
         match command.output() {
             Ok(output) => {
                 if !output.status.success() {
-                    TestResults::FAILED(String::from("command process failed"))
-                } else if output.stderr.is_empty() {
-                    TestResults::PASSED
-                } else {
                     TestResults::FAILED(String::from_utf8_lossy(&output.stderr).to_string())
+                } else {
+                    TestResults::PASSED
                 }
             },
             Err(error) => TestResults::FAILED(format!("Failed to run tests due to error: {}", error)),
