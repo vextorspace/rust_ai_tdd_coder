@@ -27,7 +27,7 @@ impl Assistant {
         }
     }
 
-    pub fn tcr(&self, path: &PathBuf) -> Result<()> {
+    pub fn tcr(&self, path: PathBuf) -> Result<()> {
         let results = self.test_provider.run_tests(&path);
 
         match results {
@@ -73,7 +73,7 @@ mod tests {
         generator.expect_generate_commit_message().times(1).return_const("working".to_string());
         let commit_generator = Box::new(generator);
         let assistant = Assistant::new(Box::new(test_provider), version_control, commit_generator);
-        assistant.tcr(&PathBuf::new()).expect("should not fail");
+        assistant.tcr(PathBuf::new()).expect("should not fail");
     }
 
     #[test]
@@ -88,7 +88,7 @@ mod tests {
         generator.expect_generate_commit_message().times(1).return_const("working".to_string());
         let commit_generator = Box::new(generator);
         let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), commit_generator);
-        assistant.tcr(&PathBuf::new()).expect("should not fail");
+        assistant.tcr(PathBuf::new()).expect("should not fail");
     }
 
     #[test]
@@ -102,6 +102,6 @@ mod tests {
         let mut generator = MockCommitGenerator::new();
         generator.expect_generate_commit_message().times(0);
         let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), Box::new(generator));
-        assistant.tcr(&PathBuf::new()).expect("should not fail");
+        assistant.tcr(PathBuf::new()).expect("should not fail");
     }
 }
