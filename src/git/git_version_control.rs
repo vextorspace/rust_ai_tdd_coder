@@ -63,6 +63,12 @@ mod tests {
         assert!(commit_argument.is_some());
         assert_eq!(commit_argument.unwrap(), "commit");
 
+        let message_argument = args.next();
+        assert!(message_argument.is_some());
+        assert_eq!(message_argument.unwrap(), "-m");
 
+        let message = args.next();
+        assert!(message.is_some());
+        assert!(!message.unwrap().is_empty());
     }
 }
