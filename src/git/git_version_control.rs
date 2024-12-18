@@ -14,13 +14,15 @@ impl GitVersionControl {
 
     fn make_add_command(&self, path: &PathBuf) -> Command {
         let mut command = Command::new("git");
+        command.current_dir(path);
         command.arg("add");
-        command.arg(path);
+        command.arg(".");
         command
     }
 
     fn make_commit_command(&self, path: &PathBuf) -> Command {
         let mut command = Command::new("git");
+        command.current_dir(path);
         command.arg("commit");
         command.arg("-m");
         command.arg("working");
@@ -55,8 +57,8 @@ mod tests {
     #[test]
     fn create_add_command() {
         let provider = GitVersionControl::new();
-        let path_to_repo = "/tests";
-        let command = provider.make_add_command(&PathBuf::from(path_to_repo.clone()));
+        let path_buf = PathBuf::from("/tests".clone());
+        let command = provider.make_add_command(&path_buf);
         let command_name = command.get_program();
         assert_eq!(command_name, "git");
         let mut args = command.get_args();
@@ -66,13 +68,18 @@ mod tests {
 
         let path = args.next();
         assert!(path.is_some());
-        assert_eq!(path.unwrap(), path_to_repo);
+        assert_eq!(path.unwrap(), ".");
+
+        let working_dir = command.get_current_dir();
+        assert!(working_dir.is_some());
+        assert_eq!(working_dir.unwrap(), path_buf.as_path());
     }
 
     #[test]
     fn create_test_command() {
         let provider = GitVersionControl::new();
-        let command = provider.make_commit_command(&PathBuf::from("/tests"));
+        let path_buf = PathBuf::from("/tests");
+        let command = provider.make_commit_command(&path_buf);
         let command_name = command.get_program();
         assert_eq!(command_name, "git");
         let mut args = command.get_args();
@@ -87,5 +94,9 @@ mod tests {
         let message = args.next();
         assert!(message.is_some());
         assert!(!message.unwrap().is_empty());
+
+        let path = command.get_current_dir();
+        assert!(path.is_some());
+        assert_eq!(path.unwrap(), path_buf.as_path());
     }
 }
