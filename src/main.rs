@@ -1,5 +1,6 @@
 use dotenv::var;
 use anyhow::{anyhow,Result};
+use rust_ai_tdd_coder::ai::constant_commit_message::ConstantCommitMessage;
 use rust_ai_tdd_coder::git::git_version_control::GitVersionControl;
 use rust_ai_tdd_coder::test_runner::cargo_test_provider::CargoTestProvider;
 
@@ -24,7 +25,8 @@ fn main() -> Result<()>{
         }
     }?;
 
-    // let assistant = rust_ai_tdd_coder::assistant::Assistant::new(test_provider, version_controller, );
+    let commit_generator = Box::new(ConstantCommitMessage::new("Working".to_string()));
+    let assistant = rust_ai_tdd_coder::assistant::Assistant::new(test_provider, version_controller,commit_generator);
 
     Ok(())
 }

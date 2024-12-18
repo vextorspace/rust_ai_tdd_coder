@@ -9,7 +9,7 @@ use crate::ai::commit_generator::CommitGenerator;
 pub struct Assistant {
     test_provider: Box<dyn TestProvider>,
     version_control: Box<dyn VersionControl>,
-    ai_coder: Box<dyn AiCoder>,
+    ai_coder: Option<Box<dyn AiCoder>>,
     commit_generator: Box<dyn CommitGenerator>,
 }
 
@@ -17,13 +17,12 @@ impl Assistant {
     pub fn new(
         test_provider: Box<dyn TestProvider>,
         version_control: Box<dyn VersionControl>,
-        ai_coder: Box<dyn AiCoder>,
         commit_generator: Box<dyn CommitGenerator>,
     ) -> Assistant {
         Assistant {
             test_provider,
             version_control,
-            ai_coder,
+            ai_coder: None,
             commit_generator,
         }
     }
@@ -51,7 +50,6 @@ mod tests {
     use super::*;
     use crate::test_runner::test_provider::MockTestProvider;
     use crate::git::version_control::MockVersionControl;
-    use crate::ai::ai_coder::MockAiCoder;
     use crate::ai::commit_generator::MockCommitGenerator;
     use crate::test_runner::test_results::TestResults;
 
@@ -59,9 +57,8 @@ mod tests {
     fn instantiates() {
         let test_provider = Box::new(MockTestProvider::new());
         let version_control = Box::new(MockVersionControl::new());
-        let ai_coder = Box::new(MockAiCoder::new());
         let commit_generator = Box::new(MockCommitGenerator::new());
-        let _assistant = Assistant::new(test_provider, version_control, ai_coder, commit_generator);
+        let _assistant = Assistant::new(test_provider, version_control, commit_generator);
     }
 
     #[test]
@@ -72,11 +69,10 @@ mod tests {
         control.expect_commit().return_once(|_,_| Ok(()));
         control.expect_diff().returning(|_| Ok(String::from("diff +println('hippo');")));
         let version_control = Box::new(control);
-        let ai_coder = Box::new(MockAiCoder::new());
         let mut generator = MockCommitGenerator::new();
         generator.expect_generate_commit_message().times(1).return_const("working".to_string());
         let commit_generator = Box::new(generator);
-        let assistant = Assistant::new(Box::new(test_provider), version_control, ai_coder, commit_generator);
+        let assistant = Assistant::new(Box::new(test_provider), version_control, commit_generator);
         assistant.tcr(&PathBuf::new()).expect("should not fail");
     }
 
@@ -88,13 +84,10 @@ mod tests {
         version_control.expect_commit().times(1).return_once(|_,_| Ok(()));
         version_control.expect_reject().times(0);
         version_control.expect_diff().times(1).returning(|_| Ok(String::from("diff +println('hippo');")));
-        let mut coder = MockAiCoder::new();
-        coder.expect_write_new_code().times(0);
-        let ai_coder = Box::new(coder);
         let mut generator = MockCommitGenerator::new();
         generator.expect_generate_commit_message().times(1).return_const("working".to_string());
         let commit_generator = Box::new(generator);
-        let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), ai_coder, commit_generator);
+        let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), commit_generator);
         assistant.tcr(&PathBuf::new()).expect("should not fail");
     }
 
@@ -106,12 +99,9 @@ mod tests {
         version_control.expect_commit().times(0);
         version_control.expect_reject().times(1).return_once(|_| Ok(()));
         version_control.expect_diff().times(0);
-        let mut coder = MockAiCoder::new();
-        coder.expect_write_new_code().times(0);
-        let ai_coder = Box::new(coder);
         let mut generator = MockCommitGenerator::new();
         generator.expect_generate_commit_message().times(0);
-        let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), ai_coder, Box::new(generator));
+        let assistant = Assistant::new(Box::new(test_provider), Box::new(version_control), Box::new(generator));
         assistant.tcr(&PathBuf::new()).expect("should not fail");
     }
 }
