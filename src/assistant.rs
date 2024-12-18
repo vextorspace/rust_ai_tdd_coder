@@ -3,6 +3,7 @@ use crate::git::version_control::VersionControl;
 use crate::ai::ai_coder::AiCoder;
 use std::path::PathBuf;
 use crate::test_runner::test_results::TestResults;
+use anyhow::Result;
 
 pub struct Assistant {
     test_provider: Box<dyn TestProvider>,
@@ -58,7 +59,7 @@ mod tests {
         let mut test_provider = MockTestProvider::new();
         test_provider.expect_run_tests().times(1).return_const(TestResults::PASSED);
         let mut control = MockVersionControl::new();
-        control.expect_commit().return_const(());
+        control.expect_commit().return_once(|_| Ok(()));
         let version_control = Box::new(control);
         let ai_coder = Box::new(MockAiCoder::new());
         let assistant = Assistant::new(Box::new(test_provider), version_control, ai_coder);
@@ -70,7 +71,7 @@ mod tests {
         let mut test_provider = MockTestProvider::new();
         test_provider.expect_run_tests().return_const(TestResults::PASSED);
         let mut version_control = MockVersionControl::new();
-        version_control.expect_commit().times(1).return_const(());
+        version_control.expect_commit().times(1).return_once(|_| Ok(()));
         version_control.expect_reject().times(0);
         let mut coder = MockAiCoder::new();
         coder.expect_write_new_code().times(0);
@@ -85,7 +86,7 @@ mod tests {
         test_provider.expect_run_tests().return_const(TestResults::FAILED("".to_string()));
         let mut version_control = MockVersionControl::new();
         version_control.expect_commit().times(0);
-        version_control.expect_reject().times(1).return_const(());
+        version_control.expect_reject().times(1).return_once(|_| Ok(()));
         let mut coder = MockAiCoder::new();
         coder.expect_write_new_code().times(0);
         let ai_coder = Box::new(coder);
