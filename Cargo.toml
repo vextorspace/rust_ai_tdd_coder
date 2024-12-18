@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.94"
+dotenv = "0.15.0"
 llm-chain = "0.13.0"
 mockall = "0.13.1"
 
