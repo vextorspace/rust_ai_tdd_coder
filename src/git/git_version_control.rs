@@ -28,6 +28,15 @@ impl GitVersionControl {
         command.arg("working");
         command
     }
+
+    pub(crate) fn make_reject_command(&self, path: &PathBuf) -> Command {
+        let mut command = Command::new("git");
+        command.current_dir(path);
+        command.arg("reset");
+        command.arg("--hard");
+        command.arg("HEAD");
+        command
+    }
 }
 
 impl VersionControl for GitVersionControl {
@@ -40,6 +49,8 @@ impl VersionControl for GitVersionControl {
     }
 
     fn reject(&self, _path: &PathBuf) -> Result<()> {
+        let mut command = self.make_reject_command(_path);
+        command.status()?;
         Ok(())
     }
 }
@@ -59,8 +70,10 @@ mod tests {
         let provider = GitVersionControl::new();
         let path_buf = PathBuf::from("/tests".clone());
         let command = provider.make_add_command(&path_buf);
+
         let command_name = command.get_program();
         assert_eq!(command_name, "git");
+
         let mut args = command.get_args();
         let add_argument = args.next();
         assert!(add_argument.is_some());
@@ -99,4 +112,31 @@ mod tests {
         assert!(path.is_some());
         assert_eq!(path.unwrap(), path_buf.as_path());
     }
+
+    #[test]
+    fn create_reject_command() {
+        let provider = GitVersionControl::new();
+        let path_buf = PathBuf::from("/tests");
+        let command = provider.make_reject_command(&path_buf);
+        let command_name = command.get_program();
+        assert_eq!(command_name, "git");
+        let mut args = command.get_args();
+        let reset_argument = args.next();
+        assert!(reset_argument.is_some());
+        assert_eq!(reset_argument.unwrap(), "reset");
+
+        let hard_argument = args.next();
+        assert!(hard_argument.is_some());
+        assert_eq!(hard_argument.unwrap(), "--hard");
+
+        let head_argument = args.next();
+        assert!(head_argument.is_some());
+        assert_eq!(head_argument.unwrap(), "HEAD");
+
+        let path = command.get_current_dir();
+        assert!(path.is_some());
+        assert_eq!(path.unwrap(), path_buf.as_path());
+    }
+
+
 }
