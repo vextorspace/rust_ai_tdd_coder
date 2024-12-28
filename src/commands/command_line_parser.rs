@@ -6,10 +6,12 @@ pub struct CommandLineParser{
 
 impl CommandLineParser {
     pub fn parse(args: &Vec<String>) -> Result<CommandLine> {
-        Ok(CommandLine {
-            command: Self::extract_command_or_err(args)?,
-            path: Self::extract_path_or_none(args),
-        })
+        Ok(
+            CommandLine::new(
+                Self::extract_command_or_err(args)?,
+                Self::extract_path_or_none(args),
+            )
+        )
     }
 
     fn extract_path_or_none(args: &Vec<String>) -> Option<String> {
