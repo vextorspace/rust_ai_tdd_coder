@@ -1,13 +1,7 @@
-use std::path::PathBuf;
-use dotenv::var;
-use anyhow::{anyhow,Result};
+use anyhow::{anyhow, Result};
 use notify::Watcher;
-use rust_ai_tdd_coder::ai::commit_generator::CommitGeneratorBuilder;
-use rust_ai_tdd_coder::test_runner::cargo_test_provider::CargoTestProvider;
-use rust_ai_tdd_coder::assistant::Assistant;
 use rust_ai_tdd_coder::assistant_factory::AssistantFactory;
-use rust_ai_tdd_coder::git::version_control::VersionControlBuilder;
-use rust_ai_tdd_coder::test_runner::test_provider::TestProviderFactory;
+use std::path::PathBuf;
 
 fn main() -> Result<()>{
     let command = std::env::args().nth(1).ok_or_else(|| anyhow!("No command argument provided"))?;
