@@ -5,7 +5,6 @@ pub struct CommandLineParser{}
 
 impl CommandLineParser {
     pub fn parse(args: &Vec<String>) -> Result<CommandLine> {
-
         Ok(
             CommandLine::new(
                 Self::extract_command_or_err(args)?,
