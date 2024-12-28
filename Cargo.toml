@@ -5,13 +5,10 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.94"
-config = "0.15.0"
 dotenv = "0.15.0"
 llm-chain = "0.13.0"
 mockall = "0.13.1"
-tokio = { version = "1.42.0", features = ["full"] }
-watchexec = "5.0.0"
-watchexec-signals = "4.0.0"
+notify = "7.0.0"
 
 [features]
 unit_tests = []

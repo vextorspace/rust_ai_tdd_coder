@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use dotenv::var;
 use anyhow::{anyhow,Result};
+use notify::Watcher;
 use rust_ai_tdd_coder::ai::constant_commit_message::ConstantCommitMessage;
 use rust_ai_tdd_coder::git::git_version_control::GitVersionControl;
 use rust_ai_tdd_coder::test_runner::cargo_test_provider::CargoTestProvider;
@@ -8,8 +9,7 @@ use watchexec_signals::Signal;
 use watchexec::Watchexec;
 use rust_ai_tdd_coder::assistant::Assistant;
 
-#[tokio::main]
-async fn main() -> Result<()>{
+fn main() -> Result<()>{
     let command = std::env::args().nth(1).ok_or_else(|| anyhow!("No command argument provided"))?;
     let path = std::env::args()
         .nth(2)
@@ -21,7 +21,7 @@ async fn main() -> Result<()>{
     match command.as_str() {
         "tcr" => make_assistant()?.tcr(path)?,
         "watch_tcr" => {
-            watch_tcr(path.clone()).await?
+            watch_tcr(path.clone())?
         },
         _ => println!("Unknown command: {}", command),
     }
@@ -39,38 +39,39 @@ fn make_assistant() -> Result<Assistant> {
     Ok(assistant)
 }
 
-async fn watch_tcr(path: PathBuf) -> Result<()> {
-    let wx = Watchexec::new(move |mut action| {
-        for event in action.events.iter() {
-            eprintln!("EVENT: {event:?}");
-            let assistant = make_assistant();
-            match assistant {
-                Ok(assistant) => {
-                    let result = assistant.tcr(path.clone());
-                    if let Err(e) = result {
-                        eprintln!("Error running TCR: {e}");
+fn watch_tcr(path: PathBuf) -> Result<()> {
+
+    let path_clone = path.clone();
+
+    let mut watcher = notify::recommended_watcher(move |res| {
+        match res {
+            Ok(event) => {
+                println!("EVENT: {event:?}");
+                let assistant = make_assistant();
+                match assistant {
+                    Ok(assistant) => {
+                        let result = assistant.tcr(path_clone);
+                        if let Err(e) = result {
+                            eprintln!("Error running TCR: {e}");
+                        }
+                    },
+                    Err(e) => {
+                        eprintln!("Error creating assistant: {e}");
                     }
-                },
-                Err(e) => {
-                    eprintln!("Error creating assistant: {e}");
                 }
+            },
+            Err(e) => {
+                eprintln!("Error: {e}");
             }
         }
-
-        // if Ctrl-C is received, quit
-        if action.signals().any(|sig| sig == Signal::Interrupt) {
-            action.quit();
-        }
-
-        action
     })?;
 
-    // watch the current directory
-    wx.config.pathset(["."]);
+    watcher.watch(&*path, notify::RecursiveMode::Recursive)?;
 
-    let _result = wx.main().await?;
-
-    Ok(())
+    println!("Press Ctrl-C to stop Watching for changes in: {:?}", path);
+    loop {
+        std::thread::sleep(std::time::Duration::from_secs(1));
+    }
 }
 
 fn make_version_control() -> Result<Box<GitVersionControl>> {
