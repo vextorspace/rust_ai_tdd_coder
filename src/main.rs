@@ -41,21 +41,29 @@ fn watch_tcr(path: PathBuf) -> Result<()> {
 
     let path_clone = path.clone();
 
-    let mut watcher = notify::recommended_watcher(move |res| {
+    let mut watcher = notify::recommended_watcher(move |res: std::result::Result<notify::Event, notify::Error>| {
         match res {
             Ok(event) => {
                 println!("EVENT: {event:?}");
-                let assistant = make_assistant();
-                match assistant {
-                    Ok(assistant) => {
-                        let result = assistant.tcr(path_clone.clone());
-                        if let Err(e) = result {
-                            eprintln!("Error running TCR: {e}");
+
+                match event.kind {
+                    notify::EventKind::Modify(_) |
+                    notify::EventKind::Create(_) |
+                    notify::EventKind::Remove(_) => {
+                        let assistant = make_assistant();
+                        match assistant {
+                            Ok(assistant) => {
+                                let result = assistant.tcr(path_clone.clone());
+                                if let Err(e) = result {
+                                    eprintln!("Error running TCR: {e}");
+                                }
+                            },
+                            Err(e) => {
+                                eprintln!("Error creating assistant: {e}");
+                            }
                         }
                     },
-                    Err(e) => {
-                        eprintln!("Error creating assistant: {e}");
-                    }
+                    _ => { },
                 }
             },
             Err(e) => {
