@@ -82,19 +82,6 @@ fn watch_tcr(path: PathBuf) -> Result<()> {
     }
 }
 
-fn make_version_control() -> Result<Box<GitVersionControl>> {
-    let vcs = var("VERSION_CONTROL")?.to_lowercase();
-    let version_controller = match vcs.as_str() {
-        "git" => {
-            Ok(Box::new(GitVersionControl::new()))
-        },
-        _ => {
-            Err(anyhow!("Unsupported version control system: {}", vcs))
-        }
-    }?;
-    Ok(version_controller)
-}
-
 fn make_test_provider() -> Result<Box<CargoTestProvider>> {
     let lang = var("TARGET_LANGUAGE")?.to_lowercase();
     let test_provider = match lang.as_str() {
