@@ -9,6 +9,9 @@ dotenv = "0.15.0"
 llm-chain = "0.13.0"
 mockall = "0.13.1"
 notify = "7.0.0"
+downcast-rs = "1.2.1"
 
 [features]
 unit_tests = []
+
+[dev-dependencies]
