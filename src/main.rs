@@ -12,12 +12,11 @@ fn main() -> Result<()>{
 
     let command = command_line.command;
 
-    let path = std::env::args()
-        .nth(2)
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from("."));
-
-    println!("Path: {:?}", path);
+    let path = if let Some(p) = command_line.path {
+        PathBuf::from(p)
+    } else {
+        PathBuf::from(".")
+    };
 
     match command.as_str() {
         "tcr" => AssistantFactory::default().tcr(path)?,
