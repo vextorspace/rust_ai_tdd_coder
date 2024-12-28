@@ -13,14 +13,10 @@ impl CommandLineParser {
     pub fn parse(args: &Vec<String>) -> Result<CommandLine> {
         let command = Self::extract_command_or_err(args)?;
 
-        if args.len() > 0 {
-            Ok(CommandLine {
-                command,
-                path: Self::extract_path_or_none(args),
-            })
-        } else {
-            Err(anyhow!("No command provided"))
-        }
+        Ok(CommandLine {
+            command,
+            path: Self::extract_path_or_none(args),
+        })
     }
 
     fn extract_path_or_none(args: &Vec<String>) -> Option<String> {
