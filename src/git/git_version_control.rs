@@ -41,19 +41,16 @@ impl GitVersionControl {
 
 impl VersionControl for GitVersionControl {
     fn commit(&self, path: &PathBuf, message: String) -> Result<()>{
-        println!("Accepting Changes");
         let mut add_command = self.make_add_command(path);
         let add_status = add_command.status()?;
         if !add_status.success() {
             return Err(anyhow::anyhow!("Failed to add files"));
         }
-        println!("Added files");
         let mut command = self.make_commit_command(path, message);
         let commit_status = command.status()?;
         if !commit_status.success() {
             return Err(anyhow::anyhow!("Failed to commit files"));
         }
-        println!("Committed files");
         Ok(())
     }
 
