@@ -1,12 +1,7 @@
 use anyhow::{Result, anyhow};
-
+use super::command_line::CommandLine;
 pub struct CommandLineParser{
 
-}
-
-pub struct CommandLine {
-    command: String,
-    path: Option<String>
 }
 
 impl CommandLineParser {

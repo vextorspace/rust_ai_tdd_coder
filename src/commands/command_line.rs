@@ -1,6 +1,6 @@
 pub struct CommandLine {
-    command: String,
-    path: Option<String>
+    pub(crate) command: String,
+    pub(crate) path: Option<String>
 }
 
 impl CommandLine {
