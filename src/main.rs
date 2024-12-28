@@ -5,6 +5,7 @@ use notify::Watcher;
 use rust_ai_tdd_coder::ai::commit_generator::CommitGeneratorBuilder;
 use rust_ai_tdd_coder::test_runner::cargo_test_provider::CargoTestProvider;
 use rust_ai_tdd_coder::assistant::Assistant;
+use rust_ai_tdd_coder::assistant_factory::AssistantFactory;
 use rust_ai_tdd_coder::git::version_control::VersionControlBuilder;
 use rust_ai_tdd_coder::test_runner::test_provider::TestProviderFactory;
 
@@ -18,7 +19,7 @@ fn main() -> Result<()>{
     println!("Path: {:?}", path);
 
     match command.as_str() {
-        "tcr" => make_assistant()?.tcr(path)?,
+        "tcr" => AssistantFactory::default().tcr(path)?,
         "watch_tcr" => {
             watch_tcr(path.clone())?
         },
@@ -26,17 +27,6 @@ fn main() -> Result<()>{
     }
 
     Ok(())
-}
-
-fn make_assistant() -> Result<Assistant> {
-    let test_provider = TestProviderFactory::default();
-
-    let version_controller = VersionControlBuilder::default();
-
-    let commit_generator = CommitGeneratorBuilder::default();
-
-    let assistant = rust_ai_tdd_coder::assistant::Assistant::new(test_provider, version_controller, commit_generator);
-    Ok(assistant)
 }
 
 fn watch_tcr(path: PathBuf) -> Result<()> {
@@ -52,17 +42,10 @@ fn watch_tcr(path: PathBuf) -> Result<()> {
                     notify::EventKind::Modify(_) |
                     notify::EventKind::Create(_) |
                     notify::EventKind::Remove(_) => {
-                        let assistant = make_assistant();
-                        match assistant {
-                            Ok(assistant) => {
-                                let result = assistant.tcr(path_clone.clone());
-                                if let Err(e) = result {
-                                    eprintln!("Error running TCR: {e}");
-                                }
-                            },
-                            Err(e) => {
-                                eprintln!("Error creating assistant: {e}");
-                            }
+                        let result = AssistantFactory::default()
+                            .tcr(path_clone.clone());
+                        if let Err(e) = result {
+                            eprintln!("Error running TCR: {e}");
                         }
                     },
                     _ => { },
