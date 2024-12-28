@@ -7,10 +7,10 @@ use anyhow::Result;
 use crate::ai::commit_generator::CommitGenerator;
 
 pub struct Assistant {
-    test_provider: Box<dyn TestProvider>,
-    version_control: Box<dyn VersionControl>,
+    pub(crate) test_provider: Box<dyn TestProvider>,
+    pub(crate) version_control: Box<dyn VersionControl>,
     ai_coder: Option<Box<dyn AiCoder>>,
-    commit_generator: Box<dyn CommitGenerator>,
+    pub(crate) commit_generator: Box<dyn CommitGenerator>,
 }
 
 impl Assistant {
