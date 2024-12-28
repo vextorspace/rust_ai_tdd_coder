@@ -3,8 +3,6 @@ use dotenv::var;
 use anyhow::{anyhow,Result};
 use notify::Watcher;
 use rust_ai_tdd_coder::ai::commit_generator::CommitGeneratorBuilder;
-use rust_ai_tdd_coder::ai::constant_commit_message::ConstantCommitMessage;
-use rust_ai_tdd_coder::git::git_version_control::GitVersionControl;
 use rust_ai_tdd_coder::test_runner::cargo_test_provider::CargoTestProvider;
 use rust_ai_tdd_coder::assistant::Assistant;
 use rust_ai_tdd_coder::git::version_control::VersionControlBuilder;
