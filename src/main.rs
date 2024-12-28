@@ -6,6 +6,7 @@ use rust_ai_tdd_coder::ai::commit_generator::CommitGeneratorBuilder;
 use rust_ai_tdd_coder::test_runner::cargo_test_provider::CargoTestProvider;
 use rust_ai_tdd_coder::assistant::Assistant;
 use rust_ai_tdd_coder::git::version_control::VersionControlBuilder;
+use rust_ai_tdd_coder::test_runner::test_provider::TestProviderFactory;
 
 fn main() -> Result<()>{
     let command = std::env::args().nth(1).ok_or_else(|| anyhow!("No command argument provided"))?;
@@ -28,11 +29,12 @@ fn main() -> Result<()>{
 }
 
 fn make_assistant() -> Result<Assistant> {
-    let test_provider = make_test_provider()?;
+    let test_provider = TestProviderFactory::default();
 
     let version_controller = VersionControlBuilder::default();
 
     let commit_generator = CommitGeneratorBuilder::default();
+
     let assistant = rust_ai_tdd_coder::assistant::Assistant::new(test_provider, version_controller, commit_generator);
     Ok(assistant)
 }

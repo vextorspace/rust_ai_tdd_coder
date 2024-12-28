@@ -14,7 +14,7 @@ impl_downcast!(TestProvider);
 pub struct TestProviderFactory {}
 
 impl TestProviderFactory {
-    pub(crate) fn default() -> Box<dyn TestProvider> {
+    pub fn default() -> Box<dyn TestProvider> {
         let lang_result = var("TARGET_LANGUAGE");
         let l = if let Ok(lang) = lang_result {
             lang.to_string()
