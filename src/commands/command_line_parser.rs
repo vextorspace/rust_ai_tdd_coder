@@ -1,8 +1,7 @@
 use anyhow::{Result, anyhow};
 use super::command_line::CommandLine;
-pub struct CommandLineParser{
 
-}
+pub struct CommandLineParser{}
 
 impl CommandLineParser {
     pub fn parse(args: &Vec<String>) -> Result<CommandLine> {
