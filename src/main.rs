@@ -10,7 +10,8 @@ use std::path::PathBuf;
 fn main() -> Result<()>{
     let command_line = CommandLineParser::parse(&std::env::args().collect())?;
 
-    let command = std::env::args().nth(1).ok_or_else(|| anyhow!("No command argument provided"))?;
+    let command = command_line.command;
+
     let path = std::env::args()
         .nth(2)
         .map(PathBuf::from)

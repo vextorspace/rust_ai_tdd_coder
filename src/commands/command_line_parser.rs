@@ -14,16 +14,16 @@ impl CommandLineParser {
     }
 
     fn extract_path_or_none(args: &Vec<String>) -> Option<String> {
-        if args.len() > 1 {
-            Some(args[1].clone())
+        if args.len() > 2 {
+            Some(args[2].clone())
         } else {
             None
         }
     }
 
     fn extract_command_or_err(args: &Vec<String>) -> Result<String> {
-        if args.len() > 0 {
-            Ok(args[0].clone())
+        if args.len() > 1 {
+            Ok(args[1].clone())
         } else {
             Err(anyhow!("No command provided"))
         }
@@ -36,19 +36,19 @@ mod tests {
 
     #[test]
     fn no_command_returns_error() {
-        let result = CommandLineParser::parse(&vec![]);
+        let result = CommandLineParser::parse(&vec!["program_name".to_string()]);
         assert!(result.is_err());
     }
 
     #[test]
     fn command_is_first_argument() {
-        let result = CommandLineParser::parse(&vec!["tcr".to_string()]);
+        let result = CommandLineParser::parse(&vec!["program_name".to_string(), "tcr".to_string()]);
         assert_eq!(result.unwrap().command, "tcr");
     }
 
     #[test]
     fn path_is_second_argument() {
-        let result = CommandLineParser::parse(&vec!["tcr".to_string(), "path".to_string()]);
+        let result = CommandLineParser::parse(&vec!["program_name".to_string(), "tcr".to_string(), "path".to_string()]);
         assert_eq!(result.unwrap().path.unwrap(), "path");
     }
 }
