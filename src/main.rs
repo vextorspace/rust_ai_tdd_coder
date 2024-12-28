@@ -5,8 +5,6 @@ use notify::Watcher;
 use rust_ai_tdd_coder::ai::constant_commit_message::ConstantCommitMessage;
 use rust_ai_tdd_coder::git::git_version_control::GitVersionControl;
 use rust_ai_tdd_coder::test_runner::cargo_test_provider::CargoTestProvider;
-use watchexec_signals::Signal;
-use watchexec::Watchexec;
 use rust_ai_tdd_coder::assistant::Assistant;
 
 fn main() -> Result<()>{
@@ -50,7 +48,7 @@ fn watch_tcr(path: PathBuf) -> Result<()> {
                 let assistant = make_assistant();
                 match assistant {
                     Ok(assistant) => {
-                        let result = assistant.tcr(path_clone);
+                        let result = assistant.tcr(path_clone.clone());
                         if let Err(e) = result {
                             eprintln!("Error running TCR: {e}");
                         }

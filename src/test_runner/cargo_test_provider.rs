@@ -1,4 +1,3 @@
-use std::fmt::format;
 use super::test_provider::TestProvider;
 use super::test_results::TestResults;
 use std::path::PathBuf;
