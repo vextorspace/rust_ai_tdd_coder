@@ -17,7 +17,10 @@ impl Commands {
     }
 
     pub fn execute(&self, command: &str) -> Result<()> {
-        Err(anyhow::anyhow!("Command not found: {}", command))
+        self.commands.iter().filter(|com| com.as_ref().get_label() == command)
+            .nth(0)
+            .map(|com| com.execute())
+            .unwrap_or_else(|| Err(anyhow::anyhow!("Command not found")))
     }
 }
 
@@ -55,5 +58,11 @@ mod tests {
         assert!(commands.execute("barney").is_err());
     }
 
+    #[test]
+    fn command_in_list_good() {
+        let mut commands = Commands::new();
+        commands.add(Box::new(FakeCommand::new("fred")));
 
+        assert!(commands.execute("fred").is_ok());
+    }
 }
