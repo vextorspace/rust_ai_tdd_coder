@@ -41,6 +41,7 @@ impl GitVersionControl {
 
 impl VersionControl for GitVersionControl {
     fn commit(&self, path: &PathBuf, message: String) -> Result<()>{
+        println!("Accepting Changes");
         let mut add_command = self.make_add_command(path);
         add_command.status()?;
         let mut command = self.make_commit_command(path, message);
@@ -49,6 +50,7 @@ impl VersionControl for GitVersionControl {
     }
 
     fn reject(&self, path: &PathBuf) -> Result<()> {
+        println!("Rejecting changes");
         let mut command = self.make_reject_command(path);
         command.status()?;
         Ok(())
