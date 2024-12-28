@@ -81,16 +81,3 @@ fn watch_tcr(path: PathBuf) -> Result<()> {
         std::thread::sleep(std::time::Duration::from_secs(1));
     }
 }
-
-fn make_test_provider() -> Result<Box<CargoTestProvider>> {
-    let lang = var("TARGET_LANGUAGE")?.to_lowercase();
-    let test_provider = match lang.as_str() {
-        "rust" => {
-            Ok(Box::new(CargoTestProvider::new()))
-        },
-        _ => {
-            Err(anyhow!("Unsupported language: {}", lang))
-        }
-    }?;
-    Ok(test_provider)
-}
