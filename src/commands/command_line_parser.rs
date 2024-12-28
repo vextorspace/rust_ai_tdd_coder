@@ -11,10 +11,8 @@ struct CommandLine {
 
 impl CommandLineParser {
     pub fn parse(args: &Vec<String>) -> Result<CommandLine> {
-        let command = Self::extract_command_or_err(args)?;
-
         Ok(CommandLine {
-            command,
+            command: Self::extract_command_or_err(args)?,
             path: Self::extract_path_or_none(args),
         })
     }
