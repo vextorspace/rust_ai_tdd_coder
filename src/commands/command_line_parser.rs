@@ -12,9 +12,14 @@ struct CommandLine {
 impl CommandLineParser {
     pub fn parse(args: &Vec<String>) -> Result<CommandLine> {
         if args.len() > 0 {
+            let path: Option<String> = if args.len() > 1 {
+                Some(args[1].clone())
+            } else {
+                None
+            };
             Ok(CommandLine {
                 command: args[0].clone(),
-                path: None,
+                path,
             })
         } else {
             Err(anyhow!("No command provided"))
@@ -36,5 +41,11 @@ mod tests {
     fn command_is_first_argument() {
         let result = CommandLineParser::parse(&vec!["tcr".to_string()]);
         assert_eq!(result.unwrap().command, "tcr");
+    }
+
+    #[test]
+    fn path_is_second_argument() {
+        let result = CommandLineParser::parse(&vec!["tcr".to_string(), "path".to_string()]);
+        assert_eq!(result.unwrap().path.unwrap(), "path");
     }
 }
