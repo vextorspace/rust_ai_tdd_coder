@@ -1,9 +1,15 @@
 use anyhow::{anyhow, Result};
 use notify::Watcher;
-use rust_ai_tdd_coder::assistant::assistant_factory::AssistantFactory;
+use rust_ai_tdd_coder::{
+    assistant::assistant_factory::AssistantFactory,
+    commands::command_line_parser::CommandLineParser,
+};
+
 use std::path::PathBuf;
 
 fn main() -> Result<()>{
+    let command_line = CommandLineParser::parse(&std::env::args().collect())?;
+
     let command = std::env::args().nth(1).ok_or_else(|| anyhow!("No command argument provided"))?;
     let path = std::env::args()
         .nth(2)

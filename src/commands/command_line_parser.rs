@@ -4,7 +4,7 @@ pub struct CommandLineParser{
 
 }
 
-struct CommandLine {
+pub struct CommandLine {
     command: String,
     path: Option<String>
 }
