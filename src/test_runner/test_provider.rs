@@ -23,12 +23,13 @@ impl TestProviderFactory {
 
 #[cfg(test)]
 mod tests {
+    use crate::test_runner::cargo_test_provider::CargoTestProvider;
     use super::*;
 
     #[test]
     fn from_lang_makes_cargo_for_rust() {
         let provider = TestProviderFactory::from_lang("rust");
 
-        assert!(provider.is::<crate::test_runner::cargo_test_provider::CargoTestProvider>());
+        assert!(provider.is::<CargoTestProvider>());
     }
 }
