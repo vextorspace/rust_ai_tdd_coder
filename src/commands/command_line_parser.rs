@@ -12,17 +12,20 @@ struct CommandLine {
 impl CommandLineParser {
     pub fn parse(args: &Vec<String>) -> Result<CommandLine> {
         if args.len() > 0 {
-            let path: Option<String> = if args.len() > 1 {
-                Some(args[1].clone())
-            } else {
-                None
-            };
             Ok(CommandLine {
                 command: args[0].clone(),
-                path,
+                path: Self::extract_path_or_none(args),
             })
         } else {
             Err(anyhow!("No command provided"))
+        }
+    }
+
+    fn extract_path_or_none(args: &Vec<String>) -> Option<String> {
+        if args.len() > 1 {
+            Some(args[1].clone())
+        } else {
+            None
         }
     }
 }
