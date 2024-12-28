@@ -1,5 +1,5 @@
 use crate::ai::commit_generator::CommitGeneratorBuilder;
-use crate::assistant::Assistant;
+use super::assistant::Assistant;
 use crate::git::version_control::VersionControlBuilder;
 use crate::test_runner::test_provider::TestProviderFactory;
 

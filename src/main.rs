@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
 use notify::Watcher;
-use rust_ai_tdd_coder::assistant_factory::AssistantFactory;
+use rust_ai_tdd_coder::assistant::assistant_factory::AssistantFactory;
 use std::path::PathBuf;
 
 fn main() -> Result<()>{
