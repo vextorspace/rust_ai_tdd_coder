@@ -1,4 +1,5 @@
-use anyhow::{Result, anyhow};
+use anyhow::{anyhow, Result};
+use std::path::PathBuf;
 use super::command_line::CommandLine;
 
 pub struct CommandLineParser{}
@@ -11,6 +12,18 @@ impl CommandLineParser {
                 Self::extract_path_or_none(args),
             )
         )
+    }
+
+    pub fn parse_command_line() -> Result<(String, PathBuf)> {
+        let command_line = CommandLineParser::parse(&std::env::args().collect())?;
+
+        let command = command_line.command;
+
+        let path = match command_line.path {
+            Some(p) => PathBuf::from(p),
+            None => std::env::current_dir()?,
+        };
+        Ok((command, path))
     }
 
     fn extract_path_or_none(args: &Vec<String>) -> Option<String> {
@@ -52,3 +65,4 @@ mod tests {
         assert_eq!(result.unwrap().path.unwrap(), "path");
     }
 }
+
