@@ -1,5 +1,6 @@
 use crate::commands::command::Command;
 use anyhow::Result;
+use crate::assistant::assistant::Assistant;
 
 pub struct TcrCommand {
 }
@@ -11,7 +12,7 @@ impl TcrCommand {
 }
 
 impl Command for TcrCommand {
-    fn execute(&self) -> Result<()> {
+    fn execute(&self, assistant: &Assistant) -> Result<()> {
         Ok(())
     }
 
