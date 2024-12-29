@@ -38,7 +38,6 @@ impl TestProvider for CargoTestProvider {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::process::CommandArgs;
 
     #[test]
     fn instantiates() {

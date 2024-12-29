@@ -83,7 +83,7 @@ mod tests {
     #[test]
     fn create_add_command() {
         let provider = GitVersionControl::new();
-        let path_buf = PathBuf::from("/tests".clone());
+        let path_buf = PathBuf::from("/tests");
         let command = provider.make_add_command(&path_buf);
 
         let command_name = command.get_program();

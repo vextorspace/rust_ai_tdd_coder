@@ -10,7 +10,7 @@ use rust_ai_tdd_coder::commands::commands::Commands;
 fn main() -> Result<()>{
     let (command, path) = CommandLineParser::parse_command_line()?;
 
-    let command_list = Commands::new();
+    let _command_list = Commands::new();
 
     match command.as_str() {
         "tcr" => AssistantFactory::default().tcr(path)?,

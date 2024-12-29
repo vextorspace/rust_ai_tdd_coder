@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use crate::commands::command::Command;
 use anyhow::Result;
 use crate::assistant::assistant::Assistant;
@@ -12,8 +13,8 @@ impl TcrCommand {
 }
 
 impl Command for TcrCommand {
-    fn execute(&self, assistant: Box<&dyn Assistant>) -> Result<()> {
-        Ok(())
+    fn execute(&self, assistant: Box<&dyn Assistant>, path: PathBuf) -> Result<()> {
+        assistant.tcr(path)
     }
 
     fn get_label(&self) -> &str {
@@ -23,24 +24,9 @@ impl Command for TcrCommand {
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
+    use crate::assistant::assistant::MockAssistant;
     use super::*;
     use crate::commands::command::Command;
-
-    struct MockAssistant {
-    }
-
-    impl MockAssistant {
-        fn new() -> Self {
-            Self {}
-        }
-    }
-
-    impl Assistant for MockAssistant {
-        fn tcr(&self, _path: PathBuf) -> Result<()> {
-            Ok(())
-        }
-    }
 
     #[test]
     fn command_name_is_tcr() {
@@ -50,9 +36,9 @@ mod tests {
 
     #[test]
     fn passing_tests_lead_to_message_and_commit() {
-        let assistant = MockAssistant::new();
+        let mut assistant = MockAssistant::new();
+        assistant.expect_tcr().times(1).return_once(|_| Ok(()));
         let command = TcrCommand::new();
-        command.execute(Box::new(&assistant)).expect("should not fail");
-
+        command.execute(Box::new(&assistant), PathBuf::from("bob")).expect("should not fail");
     }
 }
