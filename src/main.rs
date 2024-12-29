@@ -4,9 +4,12 @@ use rust_ai_tdd_coder::assistant::assistant_factory::AssistantFactory;
 
 use std::path::PathBuf;
 use rust_ai_tdd_coder::commands::command_line_parser::CommandLineParser;
+use rust_ai_tdd_coder::commands::commands::Commands;
 
 fn main() -> Result<()>{
     let (command, path) = CommandLineParser::parse_command_line()?;
+
+    let command_list = Commands::new();
 
     match command.as_str() {
         "tcr" => AssistantFactory::default().tcr(path)?,
