@@ -4,7 +4,7 @@ use anyhow::Result;
 use crate::assistant::assistant::Assistant;
 
 pub struct Commands {
-    commands: Vec<Box<dyn Command>>,
+    pub(crate) commands: Vec<Box<dyn Command>>,
 }
 
 impl Commands {
