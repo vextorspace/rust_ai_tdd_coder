@@ -3,6 +3,7 @@ use notify::Watcher;
 use rust_ai_tdd_coder::assistant::assistant_factory::AssistantFactory;
 
 use std::path::PathBuf;
+use rust_ai_tdd_coder::assistant::assistant::Assistant;
 use rust_ai_tdd_coder::commands::command_line_parser::CommandLineParser;
 use rust_ai_tdd_coder::commands::commands::Commands;
 
