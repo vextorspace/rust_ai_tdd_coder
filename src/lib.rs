@@ -3,4 +3,3 @@ pub mod test_runner;
 pub mod git;
 pub mod assistant;
 pub mod commands;
-pub mod file_watching;
