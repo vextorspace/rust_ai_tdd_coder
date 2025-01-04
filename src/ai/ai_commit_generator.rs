@@ -24,7 +24,8 @@ impl AiCommitGenerator {
                             An added or removed file should be mentioned in the message.
                                 the diff is: {}:
 
-                            Write a non-generic commit message. ", diff)
+                            Write a non-generic commit message. An example would be: \"added ability to print out the bill\"\
+                            Note that you would not add any fluff such as Assistant: before or after the actual commit message.", diff)
 
     }
 }
