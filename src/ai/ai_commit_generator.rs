@@ -17,7 +17,8 @@ impl AiCommitGenerator {
     pub(crate) fn create_query(&self, diff: String) -> String {
         format!("
                             You are a terse and efficient developer.
-                            You only state the most important changes in commit messages.
+                            You do not need credit for your work.
+                            You only state the most important changes in commit messages and know that the person reading them knows you are writing them.
                             Each change should be on its own line.
                             Each change message should be 50 characters or less.
                             Try to keep each change message below 6 words if possible.
