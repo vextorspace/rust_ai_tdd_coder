@@ -43,6 +43,15 @@ impl OpenAiProvider {
             max_tokens: 1024,
         }
     }
+
+    pub fn mini() -> Self {
+        OpenAiProvider {
+            api_key: None,
+            model: "gpt-4o-mini".to_string(),
+            temperature: 0.0,
+            max_tokens: 1024,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -69,7 +78,6 @@ mod tests {
         open_ai_provider.initialize_env();
         let result = open_ai_provider.execute_query("Return the phrase Hippo World!".to_string());
 
-        println!("==== RESULT: {:?}", result);
         assert!(result.is_ok());
         assert!(result.unwrap().contains("Hippo World"));
     }

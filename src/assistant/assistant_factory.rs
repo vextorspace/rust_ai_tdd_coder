@@ -20,7 +20,7 @@ impl AssistantFactory {
     pub fn with_ai_commit() -> DefinedAssistant {
         let test_provider = TestProviderFactory::default();
         let version_controller = VersionControlBuilder::default();
-        let mut ai_provider = crate::ai::open_ai_provider::OpenAiProvider::new();
+        let mut ai_provider = crate::ai::open_ai_provider::OpenAiProvider::mini();
         ai_provider.initialize_env();
         let commit_generator = AiCommitGenerator::new(Box::new(ai_provider));
 
