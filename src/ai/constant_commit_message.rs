@@ -1,5 +1,6 @@
-use std::path::PathBuf;
 use crate::ai::commit_generator::CommitGenerator;
+use anyhow::Result;
+
 
 pub struct ConstantCommitMessage {
     pub message: String,
@@ -12,7 +13,7 @@ impl ConstantCommitMessage {
 }
 
 impl CommitGenerator for ConstantCommitMessage {
-    fn generate_commit_message(&self, _path: &PathBuf, _diff: String) -> String {
-        self.message.clone()
+    fn generate_commit_message(&self, _diff: String) -> Result<String> {
+        Ok(self.message.clone())
     }
 }

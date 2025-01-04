@@ -36,8 +36,8 @@ impl Assistant for DefinedAssistant {
         match results {
             TestResults::PASSED => {
                 let diff = self.version_control.diff(&path)?;
-                let commit_message = self.commit_generator.generate_commit_message(&path, diff);
-                self.version_control.commit(&path, commit_message)?;
+                let commit_message = self.commit_generator.generate_commit_message(diff);
+                self.version_control.commit(&path, commit_message?)?;
             }
             TestResults::FAILED(_result) => {
                 self.version_control.reject(&path)?;
@@ -73,7 +73,7 @@ mod tests {
         control.expect_diff().returning(|_| Ok(String::from("diff +println('hippo');")));
         let version_control = Box::new(control);
         let mut generator = MockCommitGenerator::new();
-        generator.expect_generate_commit_message().times(1).return_const("working".to_string());
+        generator.expect_generate_commit_message().times(1).return_once(|_| Ok("working".to_string()));
         let commit_generator = Box::new(generator);
         let assistant = DefinedAssistant::new(Box::new(test_provider), version_control, commit_generator);
         assistant.tcr(PathBuf::new()).expect("should not fail");
@@ -88,7 +88,7 @@ mod tests {
         version_control.expect_reject().times(0);
         version_control.expect_diff().times(1).returning(|_| Ok(String::from("diff +println('hippo');")));
         let mut generator = MockCommitGenerator::new();
-        generator.expect_generate_commit_message().times(1).return_const("working".to_string());
+        generator.expect_generate_commit_message().times(1).return_once(|_| Ok("working".to_string()));
         let commit_generator = Box::new(generator);
         let assistant = DefinedAssistant::new(Box::new(test_provider), Box::new(version_control), commit_generator);
         assistant.tcr(PathBuf::new()).expect("should not fail");

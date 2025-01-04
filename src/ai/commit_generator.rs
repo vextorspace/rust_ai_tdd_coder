@@ -1,10 +1,10 @@
-use std::path::PathBuf;
-use downcast_rs::{impl_downcast, Downcast};
 use crate::ai::constant_commit_message::ConstantCommitMessage;
+use anyhow::Result;
+use downcast_rs::{impl_downcast, Downcast};
 
 #[cfg_attr(test, mockall::automock)]
 pub trait CommitGenerator: Downcast {
-    fn generate_commit_message(&self, path: &PathBuf, diff: String) -> String;
+    fn generate_commit_message(&self, diff: String) -> Result<String>;
 }
 
 impl_downcast!(CommitGenerator);
