@@ -17,16 +17,13 @@ impl AiCommitGenerator {
     pub(crate) fn create_query(&self, diff: String) -> String {
         format!("
                             You are a terse and efficient developer.
-                            You do not need credit for your work.
-                            You only state the most important changes in commit messages and know that the person reading them knows you are writing them.
                             Each change should be on its own line.
                             Each change message should be 50 characters or less.
                             Try to keep each change message below 6 words if possible.
                             An added or removed file should be mentioned in the message.
                                 the diff is: {}:
 
-                            Write a non-generic commit message. An example would be: \"added ability to print out the bill\"\
-                            Note that you would not add any fluff such as Assistant: before or after the actual commit message. Only output the actual commit message text.", diff)
+                            Write a non-generic commit message. An example would be: \"added ability to print out the bill\"", diff)
 
     }
 }
@@ -35,7 +32,7 @@ impl CommitGenerator for AiCommitGenerator {
     fn generate_commit_message(&self, diff: String) -> Result<String> {
         let query = self.create_query(diff);
 
-        self.ai_provider.execute_query(query)
+        self.ai_provider.execute_query(query).map(|msg| msg.clone().strip_prefix("Assistant:").unwrap_or(msg.clone().as_str()).trim().to_string())
     }
 }
 
