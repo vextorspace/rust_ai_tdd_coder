@@ -13,7 +13,7 @@ fn main() -> Result<()>{
     let _command_list = Commands::new();
 
     match command.as_str() {
-        "tcr" => AssistantFactory::default().tcr(path)?,
+        "tcr" => AssistantFactory::with_ai_commit().tcr(path)?,
         "watch_tcr" => {
             watch_tcr(path.clone())?
         },
