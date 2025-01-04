@@ -1,3 +1,5 @@
+use crate::ai::ai_commit_generator::AiCommitGenerator;
+use crate::ai::ai_provider::AiProvider;
 use crate::ai::commit_generator::CommitGeneratorBuilder;
 use super::defined_assistant::DefinedAssistant;
 use crate::git::version_control::VersionControlBuilder;
@@ -12,6 +14,17 @@ impl AssistantFactory {
         let commit_generator = CommitGeneratorBuilder::default();
 
         let assistant = DefinedAssistant::new(test_provider, version_controller, commit_generator);
+        assistant
+    }
+
+    pub fn with_ai_commit() -> DefinedAssistant {
+        let test_provider = TestProviderFactory::default();
+        let version_controller = VersionControlBuilder::default();
+        let mut ai_provider = crate::ai::open_ai_provider::OpenAiProvider::new();
+        ai_provider.initialize_env();
+        let commit_generator = AiCommitGenerator::new(Box::new(ai_provider));
+
+        let assistant = DefinedAssistant::new(test_provider, version_controller, Box::new(commit_generator));
         assistant
     }
 }
