@@ -10,6 +10,8 @@ llm-chain = "0.13.0"
 mockall = "0.13.1"
 notify = "7.0.0"
 downcast-rs = "1.2.1"
+llm-chain-openai = "0.13.0"
+tokio = { version = "1.42.0", features = ["full"] }
 
 [features]
 unit_tests = []
