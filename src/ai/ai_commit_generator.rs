@@ -32,7 +32,14 @@ impl CommitGenerator for AiCommitGenerator {
     fn generate_commit_message(&self, diff: String) -> Result<String> {
         let query = self.create_query(diff);
 
-        self.ai_provider.execute_query(query).map(|msg| msg.clone().strip_prefix("Assistant:").unwrap_or(msg.clone().as_str()).trim().to_string())
+        self.ai_provider
+            .execute_query(query)
+            .map(|msg| msg.clone()
+                .strip_prefix("Assistant:")
+                .unwrap_or(msg.as_str())
+                .trim()
+                .to_string()
+            )
     }
 }
 
