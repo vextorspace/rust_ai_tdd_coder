@@ -4,3 +4,4 @@ pub mod command;
 pub mod commands;
 mod tcr_command;
 mod commands_factory;
+mod watch_tcr_command;
