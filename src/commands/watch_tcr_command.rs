@@ -11,10 +11,6 @@ impl WatchCommand {
 }
 
 impl Command for WatchCommand {
-    fn should_execute(&self, command: &str) -> bool {
-        todo!()
-    }
-
     fn execute(&self, assistant: Box<&dyn Assistant>, path: PathBuf) -> anyhow::Result<()> {
         todo!()
     }
@@ -34,4 +30,6 @@ mod tests {
 
         assert_eq!(command.as_ref().get_label(), "watch_tcr");
     }
+
+
 }
