@@ -1,16 +1,16 @@
 use crate::assistant::assistant::Assistant;
 use crate::commands::command::Command;
 use std::path::PathBuf;
-pub(crate) struct WatchCommand {
+pub(crate) struct WatchTcrCommand {
 }
 
-impl WatchCommand {
+impl WatchTcrCommand {
     pub fn new() -> Self {
         Self {}
     }
 }
 
-impl Command for WatchCommand {
+impl Command for WatchTcrCommand {
     fn execute(&self, assistant: Box<&dyn Assistant>, path: PathBuf) -> anyhow::Result<()> {
         todo!()
     }
@@ -27,7 +27,7 @@ mod tests {
 
     #[test]
     fn watch_tcr_is_name() {
-        let command: Box<dyn Command> = Box::new(WatchCommand::new());
+        let command: Box<dyn Command> = Box::new(WatchTcrCommand::new());
 
         assert_eq!(command.as_ref().get_label(), "watch_tcr");
     }
