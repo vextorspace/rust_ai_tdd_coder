@@ -29,6 +29,8 @@ impl DefinedAssistant {
     }
 }
 
+unsafe impl Send for DefinedAssistant {}
+
 impl Assistant for DefinedAssistant {
     fn tcr(&self, path: PathBuf) -> Result<()> {
         let results = self.test_provider.run_tests(&path);

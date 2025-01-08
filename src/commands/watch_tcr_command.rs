@@ -1,10 +1,9 @@
 use crate::assistant::assistant::Assistant;
 use crate::commands::command::Command;
-use std::path::PathBuf;
-use crate::assistant::assistant_factory::AssistantFactory;
 use notify::Watcher;
+use std::path::PathBuf;
 
-pub(crate) struct WatchTcrCommand {
+pub struct WatchTcrCommand {
 }
 
 impl WatchTcrCommand {
@@ -26,7 +25,7 @@ impl Command for WatchTcrCommand {
                         notify::EventKind::Modify(_) |
                         notify::EventKind::Create(_) |
                         notify::EventKind::Remove(_) => {
-                            let result = AssistantFactory::with_ai_commit()
+                            let result = assistant
                                 .tcr(path_clone.clone());
                             if let Err(e) = result {
                                 eprintln!("Error running TCR: {e}");
@@ -47,8 +46,6 @@ impl Command for WatchTcrCommand {
         loop {
             std::thread::sleep(std::time::Duration::from_secs(1));
         }
-
-        Ok(assistant)
     }
 
     fn get_label(&self) -> &str {
@@ -59,7 +56,6 @@ impl Command for WatchTcrCommand {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assistant::assistant::MockAssistant;
 
     #[test]
     fn watch_tcr_is_name() {
