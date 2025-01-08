@@ -18,7 +18,7 @@ impl Commands {
         }
     }
 
-    pub fn execute(&self, command: &str, assistant: Box<&dyn Assistant>, path: PathBuf) -> Result<()> {
+    pub fn execute(&self, command: &str, assistant: Box<dyn Assistant>, path: PathBuf) -> Result<Box<dyn Assistant>> {
         self.commands.iter().filter(|com| com.as_ref().get_label() == command)
             .nth(0)
             .map(|com| com.execute(assistant, path))
@@ -44,8 +44,8 @@ mod tests {
     }
 
     impl Command for FakeCommand {
-        fn execute(&self, _assistant: Box<&dyn Assistant>, _path: PathBuf) -> Result<()> {
-            Ok(())
+        fn execute(&self, assistant: Box<dyn Assistant>, _path: PathBuf) -> Result<Box<dyn Assistant>> {
+            Ok(assistant)
         }
 
         fn get_label(&self) -> &str {
@@ -58,7 +58,7 @@ mod tests {
         let mut commands = Commands::new();
         commands.add(Box::new(FakeCommand::new("fred")));
         let assistant = AssistantFactory::default();
-        assert!(commands.execute("barney", Box::new(&assistant), PathBuf::from("fred")).is_err());
+        assert!(commands.execute("barney", Box::new(assistant), PathBuf::from("fred")).is_err());
     }
 
     #[test]
@@ -66,6 +66,6 @@ mod tests {
         let mut commands = Commands::new();
         commands.add(Box::new(FakeCommand::new("fred")));
         let assistant = AssistantFactory::default();
-        assert!(commands.execute("fred", Box::new(&assistant), PathBuf::from("bob")).is_ok());
+        assert!(commands.execute("fred", Box::new(assistant), PathBuf::from("bob")).is_ok());
     }
 }

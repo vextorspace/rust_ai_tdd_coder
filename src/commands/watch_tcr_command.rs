@@ -14,7 +14,7 @@ impl WatchTcrCommand {
 }
 
 impl Command for WatchTcrCommand {
-    fn execute(&self, _assistant: Box<&dyn Assistant>, path: PathBuf) -> anyhow::Result<()> {
+    fn execute(&self, assistant: Box<dyn Assistant>, path: PathBuf) -> anyhow::Result<Box<dyn Assistant>> {
         let path_clone = path.clone();
 
         let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
@@ -48,6 +48,7 @@ impl Command for WatchTcrCommand {
             std::thread::sleep(std::time::Duration::from_secs(1));
         }
 
+        Ok(assistant)
     }
 
     fn get_label(&self) -> &str {

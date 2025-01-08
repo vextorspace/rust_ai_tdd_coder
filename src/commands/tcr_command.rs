@@ -13,8 +13,9 @@ impl TcrCommand {
 }
 
 impl Command for TcrCommand {
-    fn execute(&self, assistant: Box<&dyn Assistant>, path: PathBuf) -> Result<()> {
-        assistant.tcr(path)
+    fn execute(&self, assistant: Box<dyn Assistant>, path: PathBuf) -> Result<Box<dyn Assistant>> {
+        assistant.tcr(path)?;
+        Ok(assistant)
     }
 
     fn get_label(&self) -> &str {
@@ -39,6 +40,6 @@ mod tests {
         let mut assistant = MockAssistant::new();
         assistant.expect_tcr().times(1).return_once(|_| Ok(()));
         let command = TcrCommand::new();
-        command.execute(Box::new(&assistant), PathBuf::from("bob")).expect("should not fail");
+        command.execute(Box::new(assistant), PathBuf::from("bob")).expect("should not fail");
     }
 }
