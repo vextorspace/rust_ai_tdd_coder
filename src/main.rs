@@ -20,39 +20,3 @@ fn main() -> Result<()>{
 
     Ok(())
 }
-
-fn watch_tcr(path: PathBuf) -> Result<()> {
-
-    let path_clone = path.clone();
-
-    let mut watcher = notify::recommended_watcher(move |res: std::result::Result<notify::Event, notify::Error>| {
-        match res {
-            Ok(event) => {
-                println!("EVENT: {event:?}");
-
-                match event.kind {
-                    notify::EventKind::Modify(_) |
-                    notify::EventKind::Create(_) |
-                    notify::EventKind::Remove(_) => {
-                        let result = AssistantFactory::default()
-                            .tcr(path_clone.clone());
-                        if let Err(e) = result {
-                            eprintln!("Error running TCR: {e}");
-                        }
-                    },
-                    _ => { },
-                }
-            },
-            Err(e) => {
-                eprintln!("Error: {e}");
-            }
-        }
-    })?;
-
-    watcher.watch(&*path, notify::RecursiveMode::Recursive)?;
-
-    println!("Press Ctrl-C to stop Watching for changes in: {:?}", path);
-    loop {
-        std::thread::sleep(std::time::Duration::from_secs(1));
-    }
-}
