@@ -8,7 +8,7 @@ pub struct WatchTcrCommand {
 
 impl WatchTcrCommand {
     pub(crate) fn is_good_event(&self, event: &Event) -> bool {
-        event.kind.is_create()
+        event.kind.is_create() || event.kind.is_modify()
     }
 }
 
@@ -88,6 +88,6 @@ mod tests {
         };
 
         let command = WatchTcrCommand::new();
-        assert!(!command.is_good_event(&event));
+        assert!(command.is_good_event(&event));
     }
 }
