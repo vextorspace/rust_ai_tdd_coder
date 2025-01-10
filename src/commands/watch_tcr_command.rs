@@ -1,9 +1,15 @@
 use crate::assistant::assistant::Assistant;
 use crate::commands::command::Command;
-use notify::Watcher;
+use notify::{Event, Watcher};
 use std::path::PathBuf;
 
 pub struct WatchTcrCommand {
+}
+
+impl WatchTcrCommand {
+    pub(crate) fn is_good_event(&self, event: &Event) -> bool {
+        event.kind.is_create()
+    }
 }
 
 impl WatchTcrCommand {
@@ -55,6 +61,7 @@ impl Command for WatchTcrCommand {
 
 #[cfg(test)]
 mod tests {
+    use notify::{Event, EventKind};
     use super::*;
 
     #[test]
@@ -62,5 +69,14 @@ mod tests {
         let command: Box<dyn Command> = Box::new(WatchTcrCommand::new());
 
         assert_eq!(command.as_ref().get_label(), "watch_tcr");
+    }
+    
+    #[test]
+    fn new_event_is_good() {
+        let event = Event::default()
+            .set_kind(EventKind::Create(notify::event::CreateKind::File));
+
+        let command = WatchTcrCommand::new();
+        assert!(command.is_good_event(&event));
     }
 }
