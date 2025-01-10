@@ -90,4 +90,15 @@ mod tests {
         let command = WatchTcrCommand::new();
         assert!(command.is_good_event(&event));
     }
+    
+    #[test]
+    fn modify_file_name_is_good() {
+        let event = Event {
+            kind: EventKind::Modify(notify::event::ModifyKind::Name(notify::event::RenameMode::Any)),
+            ..Default::default()
+        };
+
+        let command = WatchTcrCommand::new();
+        assert!(command.is_good_event(&event));
+    }
 }
