@@ -79,4 +79,15 @@ mod tests {
         let command = WatchTcrCommand::new();
         assert!(command.is_good_event(&event));
     }
+    
+    #[test]
+    fn modify_file_data_is_good() {
+        let event = Event {
+            kind: EventKind::Modify(notify::event::ModifyKind::Data(notify::event::DataChange::Any)),
+            ..Default::default()
+        };
+
+        let command = WatchTcrCommand::new();
+        assert!(!command.is_good_event(&event));
+    }
 }
