@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use std::process::Command;
 use anyhow::{anyhow, Result};
 
+#[derive(Clone)]
 pub struct GitVersionControl{
 
 }
@@ -90,6 +91,10 @@ impl VersionControl for GitVersionControl {
         }
 
         Ok(false)
+    }
+    
+    fn boxed_clone(&self) -> Box<dyn VersionControl> {
+        Box::new(self.clone())
     }
 }
 

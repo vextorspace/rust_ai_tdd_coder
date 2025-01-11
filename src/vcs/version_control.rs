@@ -11,6 +11,7 @@ pub trait VersionControl: Downcast {
     fn reject(&self, path: &PathBuf) -> Result<()>;
     fn diff(&self, path: &PathBuf) -> Result<String>;
     fn ignored(&self, path: &PathBuf) -> Result<bool>;
+    fn boxed_clone(&self) -> Box<dyn VersionControl>;
 }
 
 impl_downcast!(VersionControl);
