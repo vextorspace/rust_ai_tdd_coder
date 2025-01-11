@@ -93,8 +93,8 @@ mod tests {
         let event = Event::default()
             .set_kind(EventKind::Create(notify::event::CreateKind::File));
 
-        let command = WatchTcrCommand::new();
-        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
+        let vcs = Box::new(GitVersionControl::new());
+        assert!(WatchTcrCommand::is_good_event(vcs, &event));
     }
     
     #[test]
@@ -104,8 +104,8 @@ mod tests {
             ..Default::default()
         };
 
-        let command = WatchTcrCommand::new();
-        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
+        let vcs = Box::new(GitVersionControl::new());
+        assert!(WatchTcrCommand::is_good_event(vcs, &event));
     }
     
     #[test]
@@ -115,8 +115,8 @@ mod tests {
             ..Default::default()
         };
 
-        let command = WatchTcrCommand::new();
-        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
+        let vcs = Box::new(GitVersionControl::new());
+        assert!(WatchTcrCommand::is_good_event(vcs, &event));
     }
     
     #[test]
@@ -126,8 +126,9 @@ mod tests {
             ..Default::default()
         };
 
-        let command = WatchTcrCommand::new();
-        assert!(!WatchTcrCommand::is_good_event(command.vcs, &event));
+        let vcs = Box::new(GitVersionControl::new());
+
+        assert!(!WatchTcrCommand::is_good_event(vcs, &event));
     }
     
     #[test]
@@ -137,8 +138,8 @@ mod tests {
             ..Default::default()
         };
 
-        let command = WatchTcrCommand::new();
-        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
+        let vcs = Box::new(GitVersionControl::new());
+        assert!(WatchTcrCommand::is_good_event(vcs, &event));
     }
     
     #[test]
@@ -150,7 +151,8 @@ mod tests {
             paths: vec![path_buf],
             ..Default::default()
         };
-        let command = WatchTcrCommand::new();
-        assert!(!WatchTcrCommand::is_good_event(command.vcs, &event));
+
+        let vcs = Box::new(GitVersionControl::new());
+        assert!(!WatchTcrCommand::is_good_event(vcs, &event));
     }
  }
