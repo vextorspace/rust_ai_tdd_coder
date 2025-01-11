@@ -38,9 +38,9 @@ impl GitVersionControl {
         command
     }
 
-    pub(crate) fn make_reject_command(&self, path: &PathBuf) -> Command {
+    pub(crate) fn make_reject_command(&self) -> Command {
         let mut command = Command::new("git");
-        command.current_dir(path);
+        command.current_dir(self.vcs_root.clone());
         command.arg("reset");
         command.arg("--hard");
         command.arg("HEAD");
@@ -65,7 +65,7 @@ impl VersionControl for GitVersionControl {
 
     fn reject(&self, path: &PathBuf) -> Result<()> {
         println!("Rejecting changes");
-        let mut command = self.make_reject_command(path);
+        let mut command = self.make_reject_command();
         command.status()?;
         Ok(())
     }
@@ -174,9 +174,10 @@ mod tests {
 
     #[test]
     fn create_reject_command() {
-        let provider = GitVersionControl::new();
+        let root = PathBuf::from("/home/");
+        let provider = GitVersionControl::with_root(root.clone());
         let path_buf = PathBuf::from("/tests");
-        let command = provider.make_reject_command(&path_buf);
+        let command = provider.make_reject_command();
         let command_name = command.get_program();
         assert_eq!(command_name, "git");
         
@@ -195,7 +196,7 @@ mod tests {
 
         let path = command.get_current_dir();
         assert!(path.is_some());
-        assert_eq!(path.unwrap(), path_buf.as_path());
+        assert_eq!(path.unwrap(), root.clone());
     }
     
     #[test]
