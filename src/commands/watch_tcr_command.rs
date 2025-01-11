@@ -2,6 +2,7 @@ use crate::assistant::assistant::Assistant;
 use crate::commands::command::Command;
 use notify::{Event, Watcher};
 use std::path::PathBuf;
+use std::sync::Arc;
 use crate::vcs::git_version_control::GitVersionControl;
 use crate::vcs::version_control::VersionControl;
 
@@ -10,7 +11,7 @@ pub struct WatchTcrCommand {
 }
 
 impl WatchTcrCommand {
-    pub(crate) fn is_good_event(vcs: Box<dyn VersionControl>, event: &Event) -> bool {
+    pub(crate) fn is_good_event(vcs: Box<dyn VersionControl>, event: & Event) -> bool {
         let ignored = !event.paths.is_empty() && event.paths.iter().all(|path| {
             vcs.ignored(path).unwrap_or(false)
         });
@@ -38,7 +39,8 @@ impl WatchTcrCommand {
 impl Command for WatchTcrCommand {
     fn execute(&self, assistant: Box<dyn Assistant>, path: PathBuf) -> anyhow::Result<Box<dyn Assistant>> {
         let path_clone = path.clone();
-
+        let vcs = Arc::new(self.vcs.boxed_clone());
+        
         let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
             match res {
                 Ok(event) => {
@@ -48,10 +50,12 @@ impl Command for WatchTcrCommand {
                         notify::EventKind::Modify(_) |
                         notify::EventKind::Create(_) |
                         notify::EventKind::Remove(_) => {
-                            let result = assistant
-                                .tcr(path_clone.clone());
-                            if let Err(e) = result {
-                                eprintln!("Error running TCR: {e}");
+                            if WatchTcrCommand::is_good_event(vcs.boxed_clone(), &event) {
+                                let result = assistant
+                                    .tcr(path_clone.clone());
+                                if let Err(e) = result {
+                                    eprintln!("Error running TCR: {e}");
+                                }
                             }
                         },
                         _ => { },

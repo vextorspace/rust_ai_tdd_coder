@@ -98,6 +98,9 @@ impl VersionControl for GitVersionControl {
     }
 }
 
+unsafe impl Send for GitVersionControl {}
+unsafe impl Sync for GitVersionControl {}
+
 #[cfg(test)]
 mod tests {
     use crate::vcs::version_control::VersionControl;

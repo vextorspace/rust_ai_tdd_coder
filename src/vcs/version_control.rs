@@ -1,12 +1,11 @@
 use std::path::PathBuf;
-use std::any::Any;
 use mockall::automock;
 use anyhow::Result;
 use downcast_rs::{impl_downcast, Downcast};
 use crate::vcs::git_version_control::GitVersionControl;
 
 #[cfg_attr(test, automock)]
-pub trait VersionControl: Downcast {
+pub trait VersionControl: Downcast + Send + Sync{
     fn commit(&self, path: &PathBuf, message: String) -> Result<()>;
     fn reject(&self, path: &PathBuf) -> Result<()>;
     fn diff(&self, path: &PathBuf) -> Result<String>;
