@@ -23,7 +23,7 @@ impl GitVersionControl {
 
     fn make_add_command(&self, path: &PathBuf) -> Command {
         let mut command = Command::new("git");
-        command.current_dir(path);
+        command.current_dir(self.vcs_root.clone());
         command.arg("add");
         command.arg(".");
         command
@@ -121,7 +121,8 @@ mod tests {
 
     #[test]
     fn create_add_command() {
-        let provider = GitVersionControl::new();
+        let root = PathBuf::from("/home/");
+        let provider = GitVersionControl::with_root(root.clone());
         let path_buf = PathBuf::from("/tests");
         let command = provider.make_add_command(&path_buf);
 
@@ -139,7 +140,7 @@ mod tests {
 
         let working_dir = command.get_current_dir();
         assert!(working_dir.is_some());
-        assert_eq!(working_dir.unwrap(), path_buf.as_path());
+        assert_eq!(working_dir.unwrap(), root.as_path());
     }
 
     #[test]
