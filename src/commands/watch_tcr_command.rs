@@ -12,6 +12,7 @@ impl WatchTcrCommand {
             notify::EventKind::Modify(notify::event::ModifyKind::Name(notify::event::RenameMode::Any)) => true,
             notify::EventKind::Modify(notify::event::ModifyKind::Data(notify::event::DataChange::Any)) => true,
             notify::EventKind::Create(notify::event::CreateKind::File) => true,
+            notify::EventKind::Remove(notify::event::RemoveKind::Any) => true,
             _ => false,
         }
     }
@@ -116,5 +117,16 @@ mod tests {
 
         let command = WatchTcrCommand::new();
         assert!(!command.is_good_event(&event));
+    }
+    
+    #[test]
+    fn delete_file_is_good() {
+        let event = Event {
+            kind: EventKind::Remove(notify::event::RemoveKind::Any),
+            ..Default::default()
+        };
+
+        let command = WatchTcrCommand::new();
+        assert!(command.is_good_event(&event));
     }
 }
