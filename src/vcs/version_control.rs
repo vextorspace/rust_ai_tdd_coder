@@ -6,9 +6,9 @@ use crate::vcs::git_version_control::GitVersionControl;
 
 #[cfg_attr(test, automock)]
 pub trait VersionControl: Downcast + Send + Sync{
-    fn commit(&self, path: &PathBuf, message: String) -> Result<()>;
-    fn reject(&self, path: &PathBuf) -> Result<()>;
-    fn diff(&self, path: &PathBuf) -> Result<String>;
+    fn commit(&self, message: String) -> Result<()>;
+    fn reject(&self) -> Result<()>;
+    fn diff(&self) -> Result<String>;
     fn ignored(&self, path: &PathBuf) -> Result<bool>;
     fn boxed_clone(&self) -> Box<dyn VersionControl>;
 }

@@ -1,7 +1,7 @@
 use super::version_control::VersionControl;
+use anyhow::Result;
 use std::path::PathBuf;
 use std::process::Command;
-use anyhow::{anyhow, Result};
 
 #[derive(Clone)]
 pub struct GitVersionControl{
@@ -49,7 +49,7 @@ impl GitVersionControl {
 }
 
 impl VersionControl for GitVersionControl {
-    fn commit(&self, path: &PathBuf, message: String) -> Result<()>{
+    fn commit(&self, message: String) -> Result<()>{
         let mut add_command = self.make_add_command();
         let add_status = add_command.status()?;
         if !add_status.success() {
@@ -63,30 +63,25 @@ impl VersionControl for GitVersionControl {
         Ok(())
     }
 
-    fn reject(&self, path: &PathBuf) -> Result<()> {
+    fn reject(&self) -> Result<()> {
         println!("Rejecting changes");
         let mut command = self.make_reject_command();
         command.status()?;
         Ok(())
     }
 
-    fn diff(&self, path: &PathBuf) -> Result<String> {
+    fn diff(&self) -> Result<String> {
         let output = Command::new("git")
-            .current_dir(path)
+            .current_dir(self.vcs_root.clone())
             .arg("diff")
             .output()?;
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 
     fn ignored(&self, path: &PathBuf) -> Result<bool> {
-        let dir = if path.is_file() {
-            path.parent().ok_or(anyhow!("Failed to get parent directory"))?
-        } else {
-            path
-        };
-        
+       
         let output = Command::new("git")
-            .current_dir(dir)
+            .current_dir(self.vcs_root.clone())
             .arg("check-ignore")
             .arg(path)
             .output()?;
@@ -111,8 +106,8 @@ unsafe impl Sync for GitVersionControl {}
 
 #[cfg(test)]
 mod tests {
-    use crate::vcs::version_control::VersionControl;
     use super::*;
+    use crate::vcs::version_control::VersionControl;
 
     #[test]
     fn instantiate() {
@@ -123,7 +118,6 @@ mod tests {
     fn create_add_command() {
         let root = PathBuf::from("/home/");
         let provider = GitVersionControl::with_root(root.clone());
-        let path_buf = PathBuf::from("/tests");
         let command = provider.make_add_command();
 
         let command_name = command.get_program();
@@ -147,7 +141,6 @@ mod tests {
     fn create_commit_command() {
         let root = PathBuf::from("/home/");
         let provider = GitVersionControl::with_root(root.clone());
-        let path_buf = PathBuf::from("/tests");
         let commit_message = "commit message".to_string();
 
         let command = provider.make_commit_command(commit_message.clone());
@@ -176,7 +169,6 @@ mod tests {
     fn create_reject_command() {
         let root = PathBuf::from("/home/");
         let provider = GitVersionControl::with_root(root.clone());
-        let path_buf = PathBuf::from("/tests");
         let command = provider.make_reject_command();
         let command_name = command.get_program();
         assert_eq!(command_name, "git");

@@ -37,12 +37,12 @@ impl Assistant for DefinedAssistant {
 
         match results {
             TestResults::PASSED => {
-                let diff = self.version_control.diff(&path)?;
+                let diff = self.version_control.diff()?;
                 let commit_message = self.commit_generator.generate_commit_message(diff);
-                self.version_control.commit(&path, commit_message?)?;
+                self.version_control.commit( commit_message?)?;
             }
             TestResults::FAILED(_result) => {
-                self.version_control.reject(&path)?;
+                self.version_control.reject()?;
             }
         }
 
@@ -71,8 +71,8 @@ mod tests {
         let mut test_provider = MockTestProvider::new();
         test_provider.expect_run_tests().times(1).return_const(TestResults::PASSED);
         let mut control = MockVersionControl::new();
-        control.expect_commit().return_once(|_,_| Ok(()));
-        control.expect_diff().returning(|_| Ok(String::from("diff +println('hippo');")));
+        control.expect_commit().return_once(|_| Ok(()));
+        control.expect_diff().returning(|| Ok(String::from("diff +println('hippo');")));
         let version_control = Box::new(control);
         let mut generator = MockCommitGenerator::new();
         generator.expect_generate_commit_message().times(1).return_once(|_| Ok("working".to_string()));
@@ -86,9 +86,9 @@ mod tests {
         let mut test_provider = MockTestProvider::new();
         test_provider.expect_run_tests().return_const(TestResults::PASSED);
         let mut version_control = MockVersionControl::new();
-        version_control.expect_commit().times(1).return_once(|_,_| Ok(()));
+        version_control.expect_commit().times(1).return_once(|_| Ok(()));
         version_control.expect_reject().times(0);
-        version_control.expect_diff().times(1).returning(|_| Ok(String::from("diff +println('hippo');")));
+        version_control.expect_diff().times(1).returning(|| Ok(String::from("diff +println('hippo');")));
         let mut generator = MockCommitGenerator::new();
         generator.expect_generate_commit_message().times(1).return_once(|_| Ok("working".to_string()));
         let commit_generator = Box::new(generator);
@@ -102,7 +102,7 @@ mod tests {
         test_provider.expect_run_tests().return_const(TestResults::FAILED("".to_string()));
         let mut version_control = MockVersionControl::new();
         version_control.expect_commit().times(0);
-        version_control.expect_reject().times(1).return_once(|_| Ok(()));
+        version_control.expect_reject().times(1).return_once(|| Ok(()));
         version_control.expect_diff().times(0);
         let mut generator = MockCommitGenerator::new();
         generator.expect_generate_commit_message().times(0);
