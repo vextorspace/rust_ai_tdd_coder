@@ -8,7 +8,12 @@ pub struct WatchTcrCommand {
 
 impl WatchTcrCommand {
     pub(crate) fn is_good_event(&self, event: &Event) -> bool {
-        event.kind.is_create() || event.kind.is_modify()
+        match event.kind {
+            notify::EventKind::Modify(notify::event::ModifyKind::Name(notify::event::RenameMode::Any)) => true,
+            notify::EventKind::Modify(notify::event::ModifyKind::Data(notify::event::DataChange::Any)) => true,
+            notify::EventKind::Create(notify::event::CreateKind::File) => true,
+            _ => false,
+        }
     }
 }
 
@@ -100,5 +105,16 @@ mod tests {
 
         let command = WatchTcrCommand::new();
         assert!(command.is_good_event(&event));
+    }
+    
+    #[test]
+    fn modify_file_metadata_is_bad() {
+        let event = Event {
+            kind: EventKind::Modify(notify::event::ModifyKind::Metadata(notify::event::MetadataKind::Any)),
+            ..Default::default()
+        };
+
+        let command = WatchTcrCommand::new();
+        assert!(!command.is_good_event(&event));
     }
 }
