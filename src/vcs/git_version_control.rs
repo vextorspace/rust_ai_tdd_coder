@@ -21,7 +21,7 @@ impl GitVersionControl {
         }
     }
 
-    fn make_add_command(&self, path: &PathBuf) -> Command {
+    fn make_add_command(&self) -> Command {
         let mut command = Command::new("git");
         command.current_dir(self.vcs_root.clone());
         command.arg("add");
@@ -29,9 +29,9 @@ impl GitVersionControl {
         command
     }
 
-    fn make_commit_command(&self, path: &PathBuf, message: String) -> Command {
+    fn make_commit_command(&self, message: String) -> Command {
         let mut command = Command::new("git");
-        command.current_dir(path);
+        command.current_dir(self.vcs_root.clone());
         command.arg("commit");
         command.arg("-m");
         command.arg(message);
@@ -50,12 +50,12 @@ impl GitVersionControl {
 
 impl VersionControl for GitVersionControl {
     fn commit(&self, path: &PathBuf, message: String) -> Result<()>{
-        let mut add_command = self.make_add_command(path);
+        let mut add_command = self.make_add_command();
         let add_status = add_command.status()?;
         if !add_status.success() {
             return Err(anyhow::anyhow!("Failed to add files"));
         }
-        let mut command = self.make_commit_command(path, message);
+        let mut command = self.make_commit_command(message);
         let commit_status = command.status()?;
         if !commit_status.success() {
             return Err(anyhow::anyhow!("Failed to commit files"));
@@ -124,7 +124,7 @@ mod tests {
         let root = PathBuf::from("/home/");
         let provider = GitVersionControl::with_root(root.clone());
         let path_buf = PathBuf::from("/tests");
-        let command = provider.make_add_command(&path_buf);
+        let command = provider.make_add_command();
 
         let command_name = command.get_program();
         assert_eq!(command_name, "git");
@@ -145,11 +145,12 @@ mod tests {
 
     #[test]
     fn create_commit_command() {
-        let provider = GitVersionControl::new();
+        let root = PathBuf::from("/home/");
+        let provider = GitVersionControl::with_root(root.clone());
         let path_buf = PathBuf::from("/tests");
         let commit_message = "commit message".to_string();
 
-        let command = provider.make_commit_command(&path_buf, commit_message.clone());
+        let command = provider.make_commit_command(commit_message.clone());
         let command_name = command.get_program();
         assert_eq!(command_name, "git");
         
@@ -168,7 +169,7 @@ mod tests {
 
         let path = command.get_current_dir();
         assert!(path.is_some());
-        assert_eq!(path.unwrap(), path_buf.as_path());
+        assert_eq!(path.unwrap(), root.clone());
     }
 
     #[test]
