@@ -198,7 +198,8 @@ mod tests {
     
     #[test]
     fn ignored_files_give_true() {
-        let provider = GitVersionControl::new();
+        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let provider = GitVersionControl::with_root(root);
         
         let path_buf = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.lock");
 
