@@ -3,13 +3,14 @@ use std::any::Any;
 use mockall::automock;
 use anyhow::Result;
 use downcast_rs::{impl_downcast, Downcast};
-use crate::git::git_version_control::GitVersionControl;
+use crate::vcs::git_version_control::GitVersionControl;
 
 #[cfg_attr(test, automock)]
 pub trait VersionControl: Downcast {
     fn commit(&self, path: &PathBuf, message: String) -> Result<()>;
     fn reject(&self, path: &PathBuf) -> Result<()>;
     fn diff(&self, path: &PathBuf) -> Result<String>;
+    fn ignored(&self, path: &PathBuf) -> Result<bool>;
 }
 
 impl_downcast!(VersionControl);

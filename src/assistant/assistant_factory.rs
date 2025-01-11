@@ -2,7 +2,7 @@ use crate::ai::ai_commit_generator::AiCommitGenerator;
 use crate::ai::ai_provider::AiProvider;
 use crate::ai::commit_generator::CommitGeneratorBuilder;
 use super::defined_assistant::DefinedAssistant;
-use crate::git::version_control::VersionControlBuilder;
+use crate::vcs::version_control::VersionControlBuilder;
 use crate::test_runner::test_provider::TestProviderFactory;
 
 pub struct AssistantFactory{}
@@ -41,7 +41,7 @@ mod tests {
         let commit_generator = assistant.commit_generator;
 
         assert!(test_provider.is::<crate::test_runner::cargo_test_provider::CargoTestProvider>());
-        assert!(version_control.is::<crate::git::git_version_control::GitVersionControl>());
+        assert!(version_control.is::<crate::vcs::git_version_control::GitVersionControl>());
         assert!(commit_generator.is::<crate::ai::constant_commit_message::ConstantCommitMessage>());
     }
 }

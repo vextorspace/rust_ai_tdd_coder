@@ -2,25 +2,36 @@ use crate::assistant::assistant::Assistant;
 use crate::commands::command::Command;
 use notify::{Event, Watcher};
 use std::path::PathBuf;
+use crate::vcs::git_version_control::GitVersionControl;
+use crate::vcs::version_control::VersionControl;
 
 pub struct WatchTcrCommand {
+    vcs: Box<dyn VersionControl>,
 }
 
 impl WatchTcrCommand {
     pub(crate) fn is_good_event(&self, event: &Event) -> bool {
-        match event.kind {
+        let ignored = !event.paths.is_empty() && event.paths.iter().all(|path| {
+            self.vcs.ignored(path).unwrap_or(false)
+        });
+            
+        let kind_ok = match event.kind {
             notify::EventKind::Modify(notify::event::ModifyKind::Name(notify::event::RenameMode::Any)) => true,
             notify::EventKind::Modify(notify::event::ModifyKind::Data(notify::event::DataChange::Any)) => true,
             notify::EventKind::Create(notify::event::CreateKind::File) => true,
             notify::EventKind::Remove(notify::event::RemoveKind::Any) => true,
             _ => false,
-        }
+        };
+        
+        !ignored && kind_ok
     }
 }
 
 impl WatchTcrCommand {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            vcs: Box::new(GitVersionControl::new()),
+        }
     }
 }
 
@@ -129,4 +140,17 @@ mod tests {
         let command = WatchTcrCommand::new();
         assert!(command.is_good_event(&event));
     }
-}
+    
+    #[test]
+    fn modified_ignored_file_is_bad() {
+        let path_buf = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.lock");
+
+        let event = Event {
+            kind: EventKind::Modify(notify::event::ModifyKind::Data(notify::event::DataChange::Any)),
+            paths: vec![path_buf],
+            ..Default::default()
+        };
+        let command = WatchTcrCommand::new();
+        assert!(!command.is_good_event(&event));
+    }
+ }

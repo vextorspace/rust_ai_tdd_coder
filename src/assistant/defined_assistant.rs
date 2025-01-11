@@ -1,5 +1,5 @@
 use crate::test_runner::test_provider::TestProvider;
-use crate::git::version_control::VersionControl;
+use crate::vcs::version_control::VersionControl;
 use crate::ai::ai_coder::AiCoder;
 use std::path::PathBuf;
 use crate::test_runner::test_results::TestResults;
@@ -54,7 +54,7 @@ impl Assistant for DefinedAssistant {
 mod tests {
     use super::*;
     use crate::test_runner::test_provider::MockTestProvider;
-    use crate::git::version_control::MockVersionControl;
+    use crate::vcs::version_control::MockVersionControl;
     use crate::ai::commit_generator::MockCommitGenerator;
     use crate::test_runner::test_results::TestResults;
 

@@ -1,5 +1,4 @@
 use anyhow::Result;
-use notify::Watcher;
 use rust_ai_tdd_coder::assistant::assistant_factory::AssistantFactory;
 
 use rust_ai_tdd_coder::commands::command_line_parser::CommandLineParser;

@@ -1,7 +1,7 @@
 use super::version_control::VersionControl;
 use std::path::PathBuf;
 use std::process::Command;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 pub struct GitVersionControl{
 
@@ -13,7 +13,7 @@ impl GitVersionControl {
     }
 
     fn make_add_command(&self, path: &PathBuf) -> Command {
-        let mut command = Command::new("git");
+        let mut command = Command::new("vcs");
         command.current_dir(path);
         command.arg("add");
         command.arg(".");
@@ -21,7 +21,7 @@ impl GitVersionControl {
     }
 
     fn make_commit_command(&self, path: &PathBuf, message: String) -> Command {
-        let mut command = Command::new("git");
+        let mut command = Command::new("vcs");
         command.current_dir(path);
         command.arg("commit");
         command.arg("-m");
@@ -30,7 +30,7 @@ impl GitVersionControl {
     }
 
     pub(crate) fn make_reject_command(&self, path: &PathBuf) -> Command {
-        let mut command = Command::new("git");
+        let mut command = Command::new("vcs");
         command.current_dir(path);
         command.arg("reset");
         command.arg("--hard");
@@ -68,11 +68,34 @@ impl VersionControl for GitVersionControl {
             .output()?;
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
+
+    fn ignored(&self, path: &PathBuf) -> Result<bool> {
+        let dir = if path.is_file() {
+            path.parent().ok_or(anyhow!("Failed to get parent directory"))?
+        } else {
+            path
+        };
+        
+        let output = Command::new("git")
+            .current_dir(dir)
+            .arg("check-ignore")
+            .arg(path)
+            .output()?;
+
+        
+        if let Some(file_name) = path.file_name() {
+            if String::from_utf8_lossy(&output.stdout).contains(file_name.to_string_lossy().as_ref()) {
+                return Ok(true);
+            }
+        }
+
+        Ok(false)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::git::version_control::VersionControl;
+    use crate::vcs::version_control::VersionControl;
     use super::*;
 
     #[test]
@@ -87,7 +110,7 @@ mod tests {
         let command = provider.make_add_command(&path_buf);
 
         let command_name = command.get_program();
-        assert_eq!(command_name, "git");
+        assert_eq!(command_name, "vcs");
 
         let mut args = command.get_args();
         let add_argument = args.next();
@@ -111,7 +134,7 @@ mod tests {
 
         let command = provider.make_commit_command(&path_buf, commit_message.clone());
         let command_name = command.get_program();
-        assert_eq!(command_name, "git");
+        assert_eq!(command_name, "vcs");
         let mut args = command.get_args();
         let commit_argument = args.next();
         assert!(commit_argument.is_some());
@@ -136,7 +159,7 @@ mod tests {
         let path_buf = PathBuf::from("/tests");
         let command = provider.make_reject_command(&path_buf);
         let command_name = command.get_program();
-        assert_eq!(command_name, "git");
+        assert_eq!(command_name, "vcs");
         let mut args = command.get_args();
         let reset_argument = args.next();
         assert!(reset_argument.is_some());
@@ -153,5 +176,25 @@ mod tests {
         let path = command.get_current_dir();
         assert!(path.is_some());
         assert_eq!(path.unwrap(), path_buf.as_path());
+    }
+    
+    #[test]
+    fn ignored_files_give_true() {
+        let provider = GitVersionControl::new();
+        
+        let path_buf = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.lock");
+
+        let result = provider.ignored(&path_buf);
+        assert_eq!(result.unwrap(), true);
+    }
+    
+    #[test]
+    fn not_ignored_files_give_false() {
+        let provider = GitVersionControl::new();
+        
+        let path_buf = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
+        
+        let result = provider.ignored(&path_buf);
+        assert_eq!(result.unwrap(), false);
     }
 }
