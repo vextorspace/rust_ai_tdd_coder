@@ -10,9 +10,9 @@ pub struct WatchTcrCommand {
 }
 
 impl WatchTcrCommand {
-    pub(crate) fn is_good_event(&self, event: &Event) -> bool {
+    pub(crate) fn is_good_event(vcs: Box<dyn VersionControl>, event: &Event) -> bool {
         let ignored = !event.paths.is_empty() && event.paths.iter().all(|path| {
-            self.vcs.ignored(path).unwrap_or(false)
+            vcs.ignored(path).unwrap_or(false)
         });
             
         let kind_ok = match event.kind {
@@ -94,7 +94,7 @@ mod tests {
             .set_kind(EventKind::Create(notify::event::CreateKind::File));
 
         let command = WatchTcrCommand::new();
-        assert!(command.is_good_event(&event));
+        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
     }
     
     #[test]
@@ -105,7 +105,7 @@ mod tests {
         };
 
         let command = WatchTcrCommand::new();
-        assert!(command.is_good_event(&event));
+        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
     }
     
     #[test]
@@ -116,7 +116,7 @@ mod tests {
         };
 
         let command = WatchTcrCommand::new();
-        assert!(command.is_good_event(&event));
+        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
     }
     
     #[test]
@@ -127,7 +127,7 @@ mod tests {
         };
 
         let command = WatchTcrCommand::new();
-        assert!(!command.is_good_event(&event));
+        assert!(!WatchTcrCommand::is_good_event(command.vcs, &event));
     }
     
     #[test]
@@ -138,7 +138,7 @@ mod tests {
         };
 
         let command = WatchTcrCommand::new();
-        assert!(command.is_good_event(&event));
+        assert!(WatchTcrCommand::is_good_event(command.vcs, &event));
     }
     
     #[test]
@@ -151,6 +151,6 @@ mod tests {
             ..Default::default()
         };
         let command = WatchTcrCommand::new();
-        assert!(!command.is_good_event(&event));
+        assert!(!WatchTcrCommand::is_good_event(command.vcs, &event));
     }
  }
