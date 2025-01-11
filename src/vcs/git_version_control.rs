@@ -14,7 +14,7 @@ impl GitVersionControl {
     }
 
     fn make_add_command(&self, path: &PathBuf) -> Command {
-        let mut command = Command::new("vcs");
+        let mut command = Command::new("git");
         command.current_dir(path);
         command.arg("add");
         command.arg(".");
@@ -22,7 +22,7 @@ impl GitVersionControl {
     }
 
     fn make_commit_command(&self, path: &PathBuf, message: String) -> Command {
-        let mut command = Command::new("vcs");
+        let mut command = Command::new("git");
         command.current_dir(path);
         command.arg("commit");
         command.arg("-m");
@@ -31,7 +31,7 @@ impl GitVersionControl {
     }
 
     pub(crate) fn make_reject_command(&self, path: &PathBuf) -> Command {
-        let mut command = Command::new("vcs");
+        let mut command = Command::new("git");
         command.current_dir(path);
         command.arg("reset");
         command.arg("--hard");
@@ -118,7 +118,7 @@ mod tests {
         let command = provider.make_add_command(&path_buf);
 
         let command_name = command.get_program();
-        assert_eq!(command_name, "vcs");
+        assert_eq!(command_name, "git");
 
         let mut args = command.get_args();
         let add_argument = args.next();
@@ -142,7 +142,8 @@ mod tests {
 
         let command = provider.make_commit_command(&path_buf, commit_message.clone());
         let command_name = command.get_program();
-        assert_eq!(command_name, "vcs");
+        assert_eq!(command_name, "git");
+        
         let mut args = command.get_args();
         let commit_argument = args.next();
         assert!(commit_argument.is_some());
@@ -167,7 +168,8 @@ mod tests {
         let path_buf = PathBuf::from("/tests");
         let command = provider.make_reject_command(&path_buf);
         let command_name = command.get_program();
-        assert_eq!(command_name, "vcs");
+        assert_eq!(command_name, "git");
+        
         let mut args = command.get_args();
         let reset_argument = args.next();
         assert!(reset_argument.is_some());
