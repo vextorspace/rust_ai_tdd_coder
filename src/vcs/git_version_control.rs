@@ -5,12 +5,20 @@ use anyhow::{anyhow, Result};
 
 #[derive(Clone)]
 pub struct GitVersionControl{
-
+    vcs_root: PathBuf,
 }
 
 impl GitVersionControl {
     pub fn new() -> Self {
-        Self{}
+        Self{
+            vcs_root: PathBuf::from("."),
+        }
+    }
+    
+    pub fn with_root(root: PathBuf) -> Self {
+        Self {
+            vcs_root: root,
+        }
     }
 
     fn make_add_command(&self, path: &PathBuf) -> Command {
@@ -200,10 +208,11 @@ mod tests {
     
     #[test]
     fn not_ignored_files_give_false() {
-        let provider = GitVersionControl::new();
+        let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let provider = GitVersionControl::with_root(root);
         
         let path_buf = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
-        
+
         let result = provider.ignored(&path_buf);
         assert_eq!(result.unwrap(), false);
     }
