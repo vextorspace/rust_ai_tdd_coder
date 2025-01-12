@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 
-pub struct WatchLock {
+pub(crate) struct WatchLock {
     locked: Arc<AtomicBool>,
 }
 
@@ -12,8 +12,12 @@ impl WatchLock {
         }
     }
     
-    pub fn is_locked(&self) -> bool {
+    pub(crate) fn is_locked(&self) -> bool {
         self.locked.load(std::sync::atomic::Ordering::Relaxed)
+    }
+    
+    pub(crate) fn lock(&self) {
+        self.locked.store(true, std::sync::atomic::Ordering::Relaxed);
     }
 }
 
@@ -26,5 +30,14 @@ mod tests {
         let lock = WatchLock::new();
         
         assert!(!lock.is_locked());
+    }
+    
+    #[test]
+    fn lock_can_be_set() {
+        let lock = WatchLock::new();
+        
+        lock.lock();
+        
+        assert!(lock.is_locked());
     }
 }
