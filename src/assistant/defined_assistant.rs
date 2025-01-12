@@ -13,7 +13,7 @@ pub struct DefinedAssistant {
     pub(crate) version_control: Box<dyn VersionControl>,
     ai_coder: Option<Box<dyn AiCoder>>,
     pub(crate) commit_generator: Box<dyn CommitGenerator>,
-    pub(crate) watch_lock: WatchLock,
+    pub watch_lock: WatchLock,
 }
 
 impl DefinedAssistant {
@@ -45,7 +45,9 @@ impl Assistant for DefinedAssistant {
                 self.version_control.commit( commit_message?)?;
             }
             TestResults::FAILED(_result) => {
+                self.watch_lock.lock();
                 self.version_control.reject()?;
+                self.watch_lock.unlock();
             }
         }
 
