@@ -6,12 +6,14 @@ use crate::test_runner::test_results::TestResults;
 use anyhow::Result;
 use crate::ai::commit_generator::CommitGenerator;
 use crate::assistant::assistant::Assistant;
+use crate::assistant::watch_lock::WatchLock;
 
 pub struct DefinedAssistant {
     pub(crate) test_provider: Box<dyn TestProvider>,
     pub(crate) version_control: Box<dyn VersionControl>,
     ai_coder: Option<Box<dyn AiCoder>>,
     pub(crate) commit_generator: Box<dyn CommitGenerator>,
+    pub(crate) watch_lock: WatchLock,
 }
 
 impl DefinedAssistant {
@@ -25,6 +27,7 @@ impl DefinedAssistant {
             version_control,
             ai_coder: None,
             commit_generator,
+            watch_lock: WatchLock::new(),
         }
     }
 }
@@ -47,6 +50,10 @@ impl Assistant for DefinedAssistant {
         }
 
         Ok(())
+    }
+    
+     fn get_lock(&self) -> &WatchLock {
+        &self.watch_lock
     }
 }
 
