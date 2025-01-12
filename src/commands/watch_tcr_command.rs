@@ -47,21 +47,13 @@ impl Command for WatchTcrCommand {
         let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
             match res {
                 Ok(event) => {
-                    println!("EVENT: {event:?}");
-
-                    match event.kind {
-                        notify::EventKind::Modify(_) |
-                        notify::EventKind::Create(_) |
-                        notify::EventKind::Remove(_) => {
-                            if WatchTcrCommand::is_good_event(vcs.boxed_clone(), &event, assistant.get_lock()) {
-                                let result = assistant
-                                    .tcr(path_clone.clone());
-                                if let Err(e) = result {
-                                    eprintln!("Error running TCR: {e}");
-                                }
-                            }
-                        },
-                        _ => { },
+                    if WatchTcrCommand::is_good_event(vcs.boxed_clone(), &event, assistant.get_lock()) {
+                        println!("EVENT: {event:?}");
+                        let result = assistant
+                            .tcr(path_clone.clone());
+                        if let Err(e) = result {
+                            eprintln!("Error running TCR: {e}");
+                        }
                     }
                 },
                 Err(e) => {
