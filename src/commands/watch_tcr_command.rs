@@ -5,13 +5,14 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use crate::vcs::git_version_control::GitVersionControl;
 use crate::vcs::version_control::VersionControl;
+use crate::assistant::watch_lock::WatchLock;
 
 pub struct WatchTcrCommand {
     vcs: Box<dyn VersionControl>,
 }
 
 impl WatchTcrCommand {
-    pub(crate) fn is_good_event(vcs: Box<dyn VersionControl>, event: & Event) -> bool {
+    pub(crate) fn is_good_event(vcs: Box<dyn VersionControl>, event: & Event, lock: &WatchLock) -> bool {
         let ignored = !event.paths.is_empty() && event.paths.iter().all(|path| {
             vcs.ignored(path).unwrap_or(false)
         });
@@ -24,7 +25,9 @@ impl WatchTcrCommand {
             _ => false,
         };
         
-        !ignored && kind_ok
+        let locked = lock.is_locked();
+        
+        !ignored && kind_ok && !locked
     }
 }
 
@@ -40,7 +43,7 @@ impl Command for WatchTcrCommand {
     fn execute(&self, assistant: Box<dyn Assistant>, path: PathBuf) -> anyhow::Result<Box<dyn Assistant>> {
         let path_clone = path.clone();
         let vcs = Arc::new(self.vcs.boxed_clone());
-        
+
         let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
             match res {
                 Ok(event) => {
@@ -50,7 +53,7 @@ impl Command for WatchTcrCommand {
                         notify::EventKind::Modify(_) |
                         notify::EventKind::Create(_) |
                         notify::EventKind::Remove(_) => {
-                            if WatchTcrCommand::is_good_event(vcs.boxed_clone(), &event) {
+                            if WatchTcrCommand::is_good_event(vcs.boxed_clone(), &event, assistant.get_lock()) {
                                 let result = assistant
                                     .tcr(path_clone.clone());
                                 if let Err(e) = result {
@@ -97,8 +100,9 @@ mod tests {
         let event = Event::default()
             .set_kind(EventKind::Create(notify::event::CreateKind::File));
 
+        let lock = WatchLock::new();
         let vcs = Box::new(GitVersionControl::new());
-        assert!(WatchTcrCommand::is_good_event(vcs, &event));
+        assert!(WatchTcrCommand::is_good_event(vcs, &event, &lock));
     }
     
     #[test]
@@ -108,8 +112,9 @@ mod tests {
             ..Default::default()
         };
 
+        let lock = WatchLock::new();
         let vcs = Box::new(GitVersionControl::new());
-        assert!(WatchTcrCommand::is_good_event(vcs, &event));
+        assert!(WatchTcrCommand::is_good_event(vcs, &event, &lock));
     }
     
     #[test]
@@ -119,8 +124,9 @@ mod tests {
             ..Default::default()
         };
 
+        let lock = WatchLock::new();
         let vcs = Box::new(GitVersionControl::new());
-        assert!(WatchTcrCommand::is_good_event(vcs, &event));
+        assert!(WatchTcrCommand::is_good_event(vcs, &event, &lock));
     }
     
     #[test]
@@ -130,9 +136,10 @@ mod tests {
             ..Default::default()
         };
 
+        let lock = WatchLock::new();
         let vcs = Box::new(GitVersionControl::new());
 
-        assert!(!WatchTcrCommand::is_good_event(vcs, &event));
+        assert!(!WatchTcrCommand::is_good_event(vcs, &event, &lock));
     }
     
     #[test]
@@ -142,8 +149,9 @@ mod tests {
             ..Default::default()
         };
 
+        let lock = WatchLock::new();
         let vcs = Box::new(GitVersionControl::new());
-        assert!(WatchTcrCommand::is_good_event(vcs, &event));
+        assert!(WatchTcrCommand::is_good_event(vcs, &event, &lock));
     }
     
     #[test]
@@ -156,7 +164,18 @@ mod tests {
             ..Default::default()
         };
 
+        let lock = WatchLock::new();
         let vcs = Box::new(GitVersionControl::new());
-        assert!(!WatchTcrCommand::is_good_event(vcs, &event));
+        assert!(!WatchTcrCommand::is_good_event(vcs, &event, &lock));
+    }
+
+    #[test]
+    fn new_file_is_bad_with_lock() {
+        let event = Event::default()
+            .set_kind(EventKind::Create(notify::event::CreateKind::File));
+        let lock = WatchLock::new();
+        lock.lock();
+        let vcs = Box::new(GitVersionControl::new());
+        assert!(!WatchTcrCommand::is_good_event(vcs, &event, &lock));
     }
  }
