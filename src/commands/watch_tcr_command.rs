@@ -27,6 +27,8 @@ impl WatchTcrCommand {
         
         let locked = lock.is_locked();
         
+        println!("Ignored: {ignored}, Kind: {kind_ok}, Locked: {locked}");
+        
         !ignored && kind_ok && !locked
     }
 }
@@ -44,7 +46,7 @@ impl Command for WatchTcrCommand {
         let path_clone = path.clone();
         let vcs = Arc::new(self.vcs.boxed_clone());
 
-        let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
+        let mut watcher = notify::recommended_watcher(move |res: Result<Event, notify::Error>| {
             match res {
                 Ok(event) => {
                     if WatchTcrCommand::is_good_event(vcs.boxed_clone(), &event, assistant.get_lock()) {
