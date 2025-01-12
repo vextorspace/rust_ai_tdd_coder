@@ -19,6 +19,10 @@ impl WatchLock {
     pub(crate) fn lock(&self) {
         self.locked.store(true, std::sync::atomic::Ordering::Relaxed);
     }
+ 
+    pub(crate) fn unlock(&self) {
+        self.locked.store(false, std::sync::atomic::Ordering::Relaxed);
+    }
 }
 
 #[cfg(test)]
@@ -39,5 +43,15 @@ mod tests {
         lock.lock();
         
         assert!(lock.is_locked());
+    }
+    
+    #[test]
+    fn lock_can_be_unlocked() {
+        let lock = WatchLock::new();
+
+        lock.lock();
+        lock.unlock();
+
+        assert!(!lock.is_locked());
     }
 }
