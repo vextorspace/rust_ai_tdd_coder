@@ -24,11 +24,14 @@ impl WatchTcrCommand {
             notify::EventKind::Remove(notify::event::RemoveKind::Any) => true,
             _ => false,
         };
-        
+
         let locked = lock.is_locked();
+
+        if(kind_ok) {
+            println!("Ignored: {ignored}, Kind: {kind_ok}, Locked: {locked}");
+        }
         
-        println!("Ignored: {ignored}, Kind: {kind_ok}, Locked: {locked}");
-        
+
         !ignored && kind_ok && !locked
     }
 }
