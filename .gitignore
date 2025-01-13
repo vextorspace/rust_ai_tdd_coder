@@ -25,4 +25,5 @@ Cargo.lock
 /target
 .env
 *~
+#*
 test_watch_tcr_commnd.txt
